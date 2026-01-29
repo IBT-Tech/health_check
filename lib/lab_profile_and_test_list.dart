@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'services/data_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,13 +32,45 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
   static const primary = Color(0xFF137FEC);
   static const muted = Color(0xFF4C739A);
 
-  int selectedIndex = 0; // Selected filter index
+  int selectedIndex = 0;
   final List<String> filters = [
     "All Tests",
     "Blood Work",
     "Radiology",
     "Health Packages",
-  ]; // added extra to show scroll
+  ];
+
+  Map<String, int> cart = {};
+  Map<String, int> prices = {};
+  List<Map<String, dynamic>> tests = [];
+  Map<String, dynamic> labProfile = {};
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final testsList = await DataService.getTests();
+      final lab = await DataService.getLabProfile();
+
+      setState(() {
+        tests = testsList;
+        labProfile = lab;
+        prices = DataService.buildPricesMap(testsList);
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() => isLoading = false);
+    }
+  }
+
+  int get totalItems => cart.values.fold(0, (a, b) => a + b);
+  int get totalPrice =>
+      cart.entries.fold(0, (sum, e) => sum + (prices[e.key]! * e.value));
 
   @override
   Widget build(BuildContext context) {
@@ -53,50 +86,269 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.share, color: Colors.black),
+            icon: const Icon(Icons.share_outlined, color: Colors.black),
             onPressed: () {},
-          )
+          ),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(
-            height: 1,
-            color: Colors.grey.shade300,
-          ),
+          child: Container(height: 1, color: Colors.grey.shade300),
         ),
       ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.only(bottom: 120),
-            child: Column(
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Stack(
               children: [
-                _profileHeader(),
-                _statsRow(),
-                _searchBar(),
-                _filtersBar(),
-                _testCard(
-                  title: "Complete Blood Count (CBC)",
-                  desc: "Includes 24 parameters. Recommended for routine checkups.",
-                  price: 302,
-                  report: "12 hrs",
-                  homeVisit: true,
+                SingleChildScrollView(
+                  padding: const EdgeInsets.only(bottom: 120),
+                  child: Column(
+                    children: [
+                      _profileHeader(),
+                      _statsRow(),
+                      _searchBar(),
+                      _filtersBar(),
+                      ...tests.map((test) => _buildTestCard(test)).toList(),
+                    ],
+                  ),
                 ),
-                _testCardAdded(),
-                _lipidProfileCard(),          // Added
-                _diabetesScreeningCard(),     // Added
-
+                _bottomBar(),
               ],
             ),
+    );
+  }
+
+  Widget _buildTestCard(Map<String, dynamic> test) {
+    final title = test['title'];
+    final quantity = cart[title] ?? 0;
+    final price = prices[title] ?? 0;
+
+    return Container(
+      margin: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Title + Info
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const Icon(Icons.info_outline, size: 18, color: Colors.grey),
+            ],
           ),
-          _bottomBar(),
+          const SizedBox(height: 6),
+          Text(
+            test['description'],
+            style: const TextStyle(fontSize: 13, color: Colors.grey),
+          ),
+          const SizedBox(height: 12),
+          if (test['reportTime'] != null || test['homeVisit'])
+            Row(
+              children: [
+                if (test['reportTime'] != null)
+                  Row(
+                    children: [
+                      const Icon(Icons.timer, size: 14, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Text(
+                        "Report in ${test['reportTime']}",
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                if (test['reportTime'] != null && test['homeVisit'])
+                  const SizedBox(width: 16),
+                if (test['homeVisit'])
+                  Row(
+                    children: [
+                      const Icon(Icons.home, size: 14, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      const Text(
+                        "Home Visit Available",
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          const Divider(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "₹$price",
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: primary,
+                    ),
+                  ),
+                  const Text(
+                    "Incl. ₹2 platform fee",
+                    style: TextStyle(fontSize: 10, color: Colors.grey),
+                  ),
+                ],
+              ),
+              quantity == 0
+                  ? ElevatedButton(
+                      onPressed: () => setState(() => cart[title] = 1),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primary,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text(
+                        "Add to Cart",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  : _quantityCounter(title, quantity),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  // =================== WIDGETS ===================
+  Widget _quantityCounter(String title, int quantity) {
+    return Container(
+      decoration: BoxDecoration(
+        color: primary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      height: 40,
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () => setState(() {
+              if (cart[title]! > 1)
+                cart[title] = cart[title]! - 1;
+              else
+                cart.remove(title);
+            }),
+            icon: const Icon(Icons.remove, color: primary),
+            splashRadius: 20,
+          ),
+          Text(
+            quantity.toString(),
+            style: const TextStyle(fontWeight: FontWeight.bold, color: primary),
+          ),
+          IconButton(
+            onPressed: () => setState(() => cart[title] = cart[title]! + 1),
+            icon: const Icon(Icons.add, color: primary),
+            splashRadius: 20,
+          ),
+        ],
+      ),
+    );
+  }
 
+  Widget _bottomBar() {
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Colors.grey.shade300)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 10,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          top: false,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // LEFT
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "$totalItems Test${totalItems > 1 ? 's' : ''} Added",
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "₹$totalPrice",
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primary,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 28),
+                  minimumSize: const Size(0, 56),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 6,
+                ),
+                child: Row(
+                  children: const [
+                    Text(
+                      "Proceed to Pay",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Icon(Icons.chevron_right),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ---------- OTHER EXISTING WIDGETS ----------
   Widget _profileHeader() {
     return Container(
       color: Colors.white,
@@ -108,49 +360,62 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
-                  "https://lh3.googleusercontent.com/aida-public/AB6AXuBx6_qp9FxhmXVU-8f6kYXBmqo-0CuYaBocABdZvn6RApoMwXLXMk2kFcFAddL0BPZFh8KnaJPYwFDsWRhH0e0wuKI9M1uA9sxajF6Sj4dGse1nkpmbvzaCq1qPsD72hDKXFNp0zPU_Bi6MPD6aeQom2Tui9JDiaeXzxaYTHWwj8rIBJEJCHHfGtd-57hY4_M-ifclTkWlhg1m7iAzNGQiDYrqyR38xCUO39v0ZP6-SvTKzonlPAkvkOgDf1zyMS6j4IJnqghXel0KS",
+                  labProfile['image'] ?? "",
                   height: 90,
                   width: 90,
                   fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    height: 90,
+                    width: 90,
+                    color: Colors.grey.shade200,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Row(
                       children: [
                         Text(
-                          "City Diagnostics Center",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                          labProfile['name'] ?? "Lab Name",
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        SizedBox(width: 4),
-                        Icon(Icons.verified_outlined,
-                            color: primary, size: 18),
+                        const SizedBox(width: 4),
+                        const Icon(
+                          Icons.verified_outlined,
+                          color: primary,
+                          size: 18,
+                        ),
                       ],
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
-                      "NABL Accredited • Open until 8:00 PM",
-                      style: TextStyle(fontSize: 13, color: muted),
+                      "${labProfile['accreditation'] ?? ''} • ${labProfile['status'] ?? ''}",
+                      style: const TextStyle(fontSize: 13, color: muted),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.location_on_outlined,
-                            size: 14, color: muted),
-                        SizedBox(width: 4),
+                        const Icon(
+                          Icons.location_on_outlined,
+                          size: 14,
+                          color: muted,
+                        ),
+                        const SizedBox(width: 4),
                         Text(
-                          "12, Medical Square, Downtown",
-                          style: TextStyle(fontSize: 13, color: muted),
+                          labProfile['address'] ?? "",
+                          style: const TextStyle(fontSize: 13, color: muted),
                         ),
                       ],
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -158,17 +423,25 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
             children: [
               _actionButton(Icons.call, "Call Lab", primary),
               const SizedBox(width: 12),
-              _actionButton(Icons.directions_outlined, "Directions", primary,
-                  filled: false),
+              _actionButton(
+                Icons.directions_outlined,
+                "Directions",
+                primary,
+                filled: false,
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget _actionButton(IconData icon, String text, Color color,
-      {bool filled = true}) {
+  Widget _actionButton(
+    IconData icon,
+    String text,
+    Color color, {
+    bool filled = true,
+  }) {
     return Expanded(
       child: Container(
         height: 42,
@@ -180,15 +453,15 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon,
-                  size: 18, color: filled ? Colors.white : color),
+              Icon(icon, size: 18, color: filled ? Colors.white : color),
               const SizedBox(width: 6),
               Text(
                 text,
                 style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: filled ? Colors.white : color),
-              )
+                  fontWeight: FontWeight.bold,
+                  color: filled ? Colors.white : color,
+                ),
+              ),
             ],
           ),
         ),
@@ -205,23 +478,20 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
           _statCard(
             icon: Icons.star_border,
             title: "RATING",
-            value: "4.8 (1.2k)",
+            value: "${labProfile['rating'] ?? 0}",
             iconColor: Colors.amber,
-            titleColor: Colors.grey,
           ),
           _statCard(
             icon: Icons.biotech,
             title: "TESTS",
-            value: "500+",
+            value: "${labProfile['testsCount'] ?? 0}+",
             iconColor: Colors.grey,
-            titleColor: Colors.grey,
           ),
           _statCard(
             icon: Icons.schedule,
             title: "REPORT",
-            value: "24h",
+            value: labProfile['reportTime'] ?? "",
             iconColor: Colors.grey,
-            titleColor: Colors.grey,
           ),
         ],
       ),
@@ -233,7 +503,6 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
     required String title,
     required String value,
     required Color iconColor,
-    required Color titleColor,
   }) {
     return Expanded(
       child: Container(
@@ -242,10 +511,7 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: Colors.grey.shade300,
-            width: 1,
-          ),
+          border: Border.all(color: Colors.grey.shade300, width: 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,10 +522,10 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
                 const SizedBox(width: 6),
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: titleColor,
+                    color: Colors.grey,
                   ),
                 ),
               ],
@@ -298,14 +564,11 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
     );
   }
 
-  /// ---------------- SCROLLABLE FILTERS BAR ----------------
   Widget _filtersBar() {
     final ScrollController _scrollController = ScrollController();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 1️⃣ Horizontal filter buttons
         Container(
           color: Colors.white,
           height: 50,
@@ -319,14 +582,11 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
             itemBuilder: (context, index) {
               final selected = index == selectedIndex;
               return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedIndex = index;
-                  });
-                },
+                onTap: () => setState(() => selectedIndex = index),
                 child: Container(
                   margin: EdgeInsets.only(
-                      right: index == filters.length - 1 ? 16 : 8),
+                    right: index == filters.length - 1 ? 16 : 8,
+                  ),
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   height: 36,
                   alignment: Alignment.center,
@@ -347,529 +607,7 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
             },
           ),
         ),
-
-        const SizedBox(height: 4),
-
-        // 2️⃣ Scrollbar line below buttons
-        SizedBox(
-          height: 6, // thickness of the scroll line
-          child: Scrollbar(
-            controller: _scrollController,
-            thumbVisibility: true,
-            trackVisibility: true,
-            thickness: 6,
-            radius: const Radius.circular(8),
-            child: ListView.builder(
-              controller: _scrollController,
-              scrollDirection: Axis.horizontal,
-              itemCount: filters.length,
-              itemBuilder: (context, index) {
-                // Invisible items to match the width of buttons
-                return Container(
-                  width: 80, // roughly matches button width
-                  margin: const EdgeInsets.only(right: 8),
-                  color: Colors.transparent,
-                );
-              },
-            ),
-          ),
-        ),
       ],
-    );
-  }
-
-  Widget _testCard({
-    required String title,
-    required String desc,
-    required int price,
-    String? report,
-    bool homeVisit = false,
-    String? extra,
-    int? platformFee = 2, // optional platform fee
-  }) {
-    return Container(
-      margin: const EdgeInsets.all(12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12.withOpacity(0.03),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          )
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Title + Info Icon
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-              const Icon(Icons.info_outline, size: 18, color: Colors.grey),
-            ],
-          ),
-          const SizedBox(height: 6),
-
-          // Description
-          Text(desc, style: const TextStyle(fontSize: 13, color: Colors.grey)),
-
-          const SizedBox(height: 12),
-
-          // Report & Home Visit row
-          Row(
-            children: [
-              if (report != null)
-                Row(
-                  children: [
-                    const Icon(Icons.timer, size: 14, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text("Report in $report", style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                  ],
-                ),
-              if (report != null && homeVisit) const SizedBox(width: 16),
-              if (homeVisit)
-                Row(
-                  children: [
-                    const Icon(Icons. home, size: 14, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    const Text("Home Visit Available", style: TextStyle(fontSize: 12, color: Colors.grey)),
-                  ],
-                ),
-            ],
-          ),
-
-          if (extra != null) ...[
-            const SizedBox(height: 6),
-            Text(extra, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-          ],
-
-          const Divider(height: 24),
-
-          // Price + Add to Cart
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("₹$price", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: primary)),
-                  if (platformFee != null)
-                    Text("Incl. ₹$platformFee platform fee",
-                        style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.w500)),
-                ],
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primary,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  shadowColor: primary.withOpacity(0.2),
-                  elevation: 3,
-                ),
-                onPressed: () {},
-                child: const Text("Add to Cart", style: TextStyle(fontWeight: FontWeight.bold , color: Colors.white)),
-              )
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-
-  Widget _testCardAdded() {
-    return Container(
-      margin: const EdgeInsets.all(12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: primary, width: 2),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Title and info
-          Row(
-            children: const [
-              Expanded(
-                child: Text(
-                  "Thyroid Profile (T3, T4, TSH)",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-              Icon(Icons.info_outline, color: Colors.grey, size: 18),
-            ],
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            "Assessment of thyroid gland function.",
-            style: TextStyle(fontSize: 13, color: Colors.grey),
-          ),
-
-          // Report row
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              const Icon(Icons.timer, size: 14, color: Colors.green),
-              const SizedBox(width: 4),
-              const Text(
-                "Report in 8 hrs",
-                style: TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-            ],
-          ),
-
-          const Divider(height: 24),
-
-          // Price + Quantity
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Price Column
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    "₹452",
-                    style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: primary),
-                  ),
-                  Text(
-                    "Incl. ₹2 platform fee",
-                    style: TextStyle(fontSize: 10, color: Colors.grey),
-                  ),
-                ],
-              ),
-
-              // Quantity Selector
-              Container(
-                decoration: BoxDecoration(
-                  color: primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                height: 40,
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.remove, color: primary),
-                      splashRadius: 20,
-                    ),
-                    const Text(
-                      "1",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: primary),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.add, color: primary),
-                      splashRadius: 20,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-  Widget _lipidProfileCard() {
-    return Container(
-      margin: const EdgeInsets.all(12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: const [
-              Expanded(
-                child: Text(
-                  "Lipid Profile",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-              Icon(Icons.info_outline, color: Colors.grey, size: 18),
-            ],
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            "Total cholesterol, HDL, LDL, VLDL and Triglycerides.",
-            style: TextStyle(fontSize: 13, color: Colors.grey),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: const [
-              Icon(Icons.restaurant, size: 14, color: Colors.grey),
-              SizedBox(width: 4),
-              Text(
-                "12 hrs fasting required",
-                style: TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-            ],
-          ),
-          const Divider(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    "₹602",
-                    style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: primary),
-                  ),
-                  Text(
-                    "Incl. ₹2 platform fee",
-                    style: TextStyle(fontSize: 10, color: Colors.grey),
-                  ),
-                ],
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primary,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-                child: const Text(
-                  "Add to Cart",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-  Widget _diabetesScreeningCard() {
-    return Container(
-      margin: const EdgeInsets.all(12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: const [
-              Expanded(
-                child: Text(
-                  "Diabetes Screening",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-              Icon(Icons.info_outline, color: Colors.grey, size: 18),
-            ],
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            "HbA1c and Blood Sugar (Fasting).",
-            style: TextStyle(fontSize: 13, color: Colors.grey),
-          ),
-          const Divider(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    "₹552",
-                    style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: primary),
-                  ),
-                  Text(
-                    "Incl. ₹2 platform fee",
-                    style: TextStyle(fontSize: 10, color: Colors.grey),
-                  ),
-                ],
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primary,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-                child: const Text(
-                  "Add to Cart",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-
-  Widget _bottomBar() {
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: 0,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            top: BorderSide(color: Colors.grey.shade300),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 10,
-              offset: const Offset(0, -4),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          top: false,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              /// LEFT
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Text(
-                    "1 Test Added",
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Text(
-                        "₹452",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(width: 6),
-                      Text(
-                        "₹600",
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
-                          decoration: TextDecoration.lineThrough,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-
-              /// RIGHT BUTTON
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 28),
-                  minimumSize: const Size(0, 56),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 6,
-                ),
-                child: Row(
-                  children: const [
-                    Text(
-                      "Proceed to Pay",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Icon(Icons.chevron_right),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-class _statCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final IconData icon;
-
-  const _statCard(this.title, this.value, this.icon);
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF6F7F8),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, size: 16),
-            const SizedBox(height: 6),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

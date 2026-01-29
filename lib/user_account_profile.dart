@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'user_health_profile.dart';
 
 void main() {
   runApp(const MyApp());
@@ -74,23 +75,36 @@ class _EditProfilePageState extends State<EditProfilePage> {
               color: theme.scaffoldBackgroundColor.withOpacity(0.9),
               child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.arrow_back_ios, size: 24),
-                  ),
+                  const SizedBox(width: 24), // 👈 left empty space
+
                   const Expanded(
                     child: Center(
                       child: Text(
                         "Edit Profile",
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 24),
+
+                  // 👉 RIGHT SIDE ARROW
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const UserHealthProfile(),
+                        ),
+                      );
+                    },
+                    child: const Icon(Icons.arrow_forward_ios, size: 24),
+                  ),
                 ],
               ),
             ),
+
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -228,7 +242,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         Text(
           label.toUpperCase(),
           style: const TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey),
+              fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black),
         ),
         const SizedBox(height: 4),
         TextFormField(

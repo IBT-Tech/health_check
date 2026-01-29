@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 void main() {
@@ -12,10 +14,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ManageTestsScreen(),
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
+      ),
+      home: const ManageTestsScreen(),
     );
+
   }
 }
 
@@ -37,6 +43,29 @@ class LabTest {
   });
 
   int get customerPrice => yourPrice + 2;
+
+  factory LabTest.fromJson(Map<String, dynamic> json) {
+    return LabTest(
+      name: json['name'],
+      labId: json['labId'],
+      yourPrice: json['yourPrice'],
+      isActive: json['isActive'],
+      icon: _iconFromString(json['icon']),
+    );
+  }
+
+  static IconData _iconFromString(String icon) {
+    switch (icon) {
+      case 'monitor_heart':
+        return Symbols.monitor_heart;
+      case 'bloodtype':
+        return Symbols.bloodtype;
+      case 'health_and_safety':
+        return Symbols.health_and_safety;
+      default:
+        return Symbols.science;
+    }
+  }
 }
 
 /* ---------------- SCREEN ---------------- */
@@ -50,50 +79,35 @@ class ManageTestsScreen extends StatefulWidget {
 
 class _ManageTestsScreenState extends State<ManageTestsScreen> {
   final TextEditingController searchCtrl = TextEditingController();
+  int selectedTab = 0;
+  List<LabTest> tests = [];
 
-  int selectedTab = 0; // 0=All,1=Active,2=Inactive
+  @override
+  void initState() {
+    super.initState();
+    _loadTests();
+  }
 
-  List<LabTest> tests = [
-    LabTest(
-        name: "Complete Blood Count (CBC)",
-        labId: "20491",
-        yourPrice: 498,
-        isActive: true,
-        icon: Symbols.science),
-    LabTest(
-        name: "Lipid Profile",
-        labId: "20498",
-        yourPrice: 748,
-        isActive: true,
-        icon: Symbols.monitor_heart),
-    LabTest(
-        name: "HbA1c (Glycated Hb)",
-        labId: "31052",
-        yourPrice: 598,
-        isActive: false,
-        icon: Symbols.bloodtype),
-    LabTest(
-        name: "Liver Function Test (LFT)",
-        labId: "20492",
-        yourPrice: 848,
-        isActive: true,
-        icon: Symbols.health_and_safety),
-  ];
+  Future<void> _loadTests() async {
+    final raw = await rootBundle.loadString('assets/tests.json');
+    final decoded = json.decode(raw);
+    setState(() {
+      tests = (decoded['tests'] as List)
+          .map((e) => LabTest.fromJson(e))
+          .toList();
+    });
+  }
 
   List<LabTest> get filteredTests {
     return tests.where((t) {
-      final matchSearch =
+      final searchMatch =
       t.name.toLowerCase().contains(searchCtrl.text.toLowerCase());
-
-      final matchTab = selectedTab == 0 ||
+      final tabMatch = selectedTab == 0 ||
           (selectedTab == 1 && t.isActive) ||
           (selectedTab == 2 && !t.isActive);
-
-      return matchSearch && matchTab;
+      return searchMatch && tabMatch;
     }).toList();
   }
-
-  /* ---------------- UI ---------------- */
 
   @override
   Widget build(BuildContext context) {
@@ -124,68 +138,61 @@ class _ManageTestsScreenState extends State<ManageTestsScreen> {
       backgroundColor: Colors.white.withOpacity(0.9),
       elevation: 0,
       centerTitle: true,
-
-      // 👇 BACK ARROW
       leading: IconButton(
-        icon: const Icon(
-          Icons.arrow_back_ios,
-          color: Color(0xFF0D1B12),
-          size: 20,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
+        icon: const Icon(Icons.arrow_back_ios,
+            size: 20, color: Color(0xFF0D1B12)),
+        onPressed: () => Navigator.pop(context),
       ),
-
       title: const Text(
         "Manage Tests & Pricing",
         style: TextStyle(
-          color: Color(0xFF0D1B12),
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-        ),
+            color: Color(0xFF0D1B12),
+            fontWeight: FontWeight.bold,
+            fontSize: 18),
       ),
-
-      // 👇 BULK BUTTON
-      actions: [
+      actions: const [
         Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: GestureDetector(
-            onTap: () {
-              // TODO: Bulk action
-            },
-            child: const Text(
-              "Bulk",
-              style: TextStyle(
+          padding: EdgeInsets.only(right: 16),
+          child: Text(
+            "Bulk",
+            style: TextStyle(
                 color: Color(0xFF13EC5B),
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
+                fontWeight: FontWeight.bold),
           ),
         )
       ],
     );
   }
 
-
   /* ---------------- SEARCH ---------------- */
 
   Widget _searchBar() {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: TextField(
-        controller: searchCtrl,
-        onChanged: (_) => setState(() {}),
-        decoration: InputDecoration(
-          prefixIcon:
-          const Icon(Icons.search, color: Color(0xFF13EC5B)),
-          hintText: "Search tests by name...",
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide.none,
+      child: Container(
+        height: 44, // compact rectangle
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8), // small round radius
+          border: Border.all(
+            color: Colors.grey.shade300,
+            width: 1,
+          ),
+        ),
+        child: TextField(
+          controller: searchCtrl,
+          onChanged: (_) => setState(() {}),
+          decoration: const InputDecoration(
+            hintText: "Search tests by name...",
+            prefixIcon: Icon(
+              Icons.search,
+              color: Color(0xFF13EC5B),
+              size: 20,
+            ),
+            border: InputBorder.none, // remove default border
+            isDense: true,
+            contentPadding:
+            EdgeInsets.symmetric(vertical: 10),
           ),
         ),
       ),
@@ -214,16 +221,14 @@ class _ManageTestsScreenState extends State<ManageTestsScreen> {
             Text(
               title,
               style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: active ? Colors.black : Colors.grey,
-              ),
+                  fontWeight: FontWeight.bold,
+                  color: active ? Colors.black : Colors.grey),
             ),
             const SizedBox(height: 6),
             Container(
               height: 3,
-              color: active
-                  ? const Color(0xFF13EC5B)
-                  : Colors.transparent,
+              color:
+              active ? const Color(0xFF13EC5B) : Colors.transparent,
             )
           ],
         ),
@@ -251,29 +256,20 @@ class _ManageTestsScreenState extends State<ManageTestsScreen> {
                 CircleAvatar(
                   backgroundColor:
                   const Color(0xFF13EC5B).withOpacity(0.2),
-                  child: Icon(
-                    t.icon,
-                    color: const Color(0xFF13EC5B),
-                  ),
+                  child:
+                  Icon(t.icon, color: const Color(0xFF13EC5B)),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        t.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "Lab ID: ${t.labId}",
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      )
+                      Text(t.name,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold)),
+                      Text("Lab ID: ${t.labId}",
+                          style: const TextStyle(
+                              fontSize: 12, color: Colors.grey)),
                     ],
                   ),
                 ),
@@ -308,12 +304,10 @@ class _ManageTestsScreenState extends State<ManageTestsScreen> {
     );
   }
 
-  Widget _priceBox(String title,
-      String price, {
-        bool editable = false,
+  Widget _priceBox(String title, String price,
+      {bool editable = false,
         String? subtitle,
-        VoidCallback? onEdit,
-      }) {
+        VoidCallback? onEdit}) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -324,41 +318,28 @@ class _ManageTestsScreenState extends State<ManageTestsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title.toUpperCase(),
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text(title.toUpperCase(),
+                style: const TextStyle(
+                    fontSize: 11, fontWeight: FontWeight.bold)),
             Row(
               children: [
-                Text(
-                  price,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(price,
+                    style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold)),
                 if (editable)
                   IconButton(
-                    icon: const Icon(
-                      Icons.edit_outlined,
-                      size: 16,
-                      color: Color(0xFF13EC5B),
-                    ),
+                    icon: const Icon(Icons.edit_outlined,
+                        size: 16, color: Color(0xFF13EC5B)),
                     onPressed: onEdit,
-                  )
+                  ),
               ],
             ),
             if (subtitle != null)
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: Color(0xFF13EC5B),
-                ),
-              )
+              Text(subtitle,
+                  style: const TextStyle(
+                      fontSize: 10,
+                      color: Color(0xFF13EC5B))),
           ],
         ),
       ),
@@ -373,91 +354,77 @@ class _ManageTestsScreenState extends State<ManageTestsScreen> {
 
     showDialog(
       context: context,
-      builder: (_) =>
-          AlertDialog(
-            title: const Text("Edit Price"),
-            content: TextField(
-              controller: ctrl,
-              keyboardType: TextInputType.number,
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Cancel"),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    t.yourPrice = int.tryParse(ctrl.text) ?? t.yourPrice;
-                  });
-                  Navigator.pop(context);
-                },
-                child: const Text("Save"),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: const Text("Edit Price"),
+        content: TextField(
+          controller: ctrl,
+          keyboardType: TextInputType.number,
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel")),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                t.yourPrice =
+                    int.tryParse(ctrl.text) ?? t.yourPrice;
+              });
+              Navigator.pop(context);
+            },
+            child: const Text("Save"),
           ),
-    );
-  }
-
-  /* ---------------- ADD NEW TEST ---------------- */
-
-  Widget _fab() {
-    return FloatingActionButton.extended(
-      backgroundColor: const Color(0xFF13EC5B),
-      onPressed: _addTest,
-      icon: const Icon(Icons.add, color: Colors.black),
-      label: const Text(
-        "ADD NEW TEST",
-        style: TextStyle(color: Colors.black),
+        ],
       ),
     );
   }
 
-  void _addTest() {
-    setState(() {
-      tests.add(
-        LabTest(
-          name: "New Test",
-          labId: DateTime
-              .now()
-              .millisecondsSinceEpoch
-              .toString(),
-          yourPrice: 500,
-          isActive: true,
-          icon: Symbols.science,
-        ),
-      );
-    });
+  /* ---------------- FAB ---------------- */
+
+  Widget _fab() {
+    return FloatingActionButton.extended(
+      backgroundColor: const Color(0xFF13EC5B),
+      onPressed: () {
+        setState(() {
+          tests.add(
+            LabTest(
+              name: "New Test",
+              labId: DateTime.now()
+                  .millisecondsSinceEpoch
+                  .toString(),
+              yourPrice: 500,
+              isActive: true,
+              icon: Symbols.science,
+            ),
+          );
+        });
+      },
+      icon: const Icon(Icons.add, color: Colors.black),
+      label: const Text("ADD NEW TEST",
+          style: TextStyle(color: Colors.black)),
+    );
   }
 
   /* ---------------- BOTTOM NAV ---------------- */
 
   Widget _bottomNav() {
-    return SafeArea(
-      child: Container(
-        decoration: const BoxDecoration(
-          border: Border(
-            top: BorderSide(color: Colors.black12),
-          ),
-        ),
-        child: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: 1,
-          selectedItemColor: const Color(0xFF13EC5B),
-          unselectedItemColor: Colors.grey,
-          showUnselectedLabels: true,
-          items: const [
-            BottomNavigationBarItem(
-                icon: Icon(Icons.dashboard_outlined), label: "Dashboard"),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.medical_services_outlined), label: "Tests"),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.receipt_long), label: "Orders"),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.settings_outlined), label: "Settings"),
-          ],
-        ),
-      ),
+    return BottomNavigationBar(
+      currentIndex: 1,
+      selectedItemColor: const Color(0xFF13EC5B),
+      unselectedItemColor: Colors.grey,
+      items: const [
+        BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard_outlined),
+            label: "Dashboard"),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.medical_services_outlined),
+            label: "Tests"),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.receipt_long), label: "Orders"),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.settings_outlined),
+            label: "Settings"),
+      ],
     );
   }
 }
