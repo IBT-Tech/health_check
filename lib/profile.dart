@@ -42,15 +42,12 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
   File? profileImage;
 
   final nameCtrl = TextEditingController(text: "Dr. Jonathan Smith");
-  final emailCtrl =
-  TextEditingController(text: "j.smith@pathologylab.com");
-  final phoneCtrl =
-  TextEditingController(text: "+1 (555) 123-4567");
+  final emailCtrl = TextEditingController(text: "j.smith@pathologylab.com");
+  final phoneCtrl = TextEditingController(text: "+1 (555) 123-4567");
 
   final heightCtrl = TextEditingController();
   final weightCtrl = TextEditingController();
-  final aadharCtrl =
-  TextEditingController(text: "123456789012");
+  final aadharCtrl = TextEditingController(text: "123456789012");
   final historyCtrl = TextEditingController();
 
   String? gender;
@@ -69,19 +66,28 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: const [
-            TextField(obscureText: true, decoration: InputDecoration(labelText: "Old Password")),
+            TextField(
+              obscureText: true,
+              decoration: InputDecoration(labelText: "Old Password"),
+            ),
             SizedBox(height: 12),
-            TextField(obscureText: true, decoration: InputDecoration(labelText: "New Password")),
+            TextField(
+              obscureText: true,
+              decoration: InputDecoration(labelText: "New Password"),
+            ),
           ],
         ),
         actions: [
-          TextButton(onPressed: Navigator.of(context).pop, child: const Text("Cancel")),
+          TextButton(
+            onPressed: Navigator.of(context).pop,
+            child: const Text("Cancel"),
+          ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Password updated")),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text("Password updated")));
             },
             child: const Text("Update"),
           ),
@@ -113,8 +119,9 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                       CircleAvatar(
                         radius: 55,
                         backgroundColor: primaryGreen.withOpacity(.2),
-                        backgroundImage:
-                        profileImage != null ? FileImage(profileImage!) : null,
+                        backgroundImage: profileImage != null
+                            ? FileImage(profileImage!)
+                            : null,
                         child: profileImage == null
                             ? const Icon(Icons.person, size: 55)
                             : null,
@@ -126,7 +133,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                           icon: const Icon(Icons.camera_alt, size: 18),
                           onPressed: pickImage,
                         ),
-                      )
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -152,7 +159,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                 children: [
                   _sectionTitle("Health Profile"),
                   DropdownButtonFormField<String>(
-                    value: gender,
+                    initialValue: gender,
                     hint: const Text("Select Gender"),
                     items: const [
                       DropdownMenuItem(value: "male", child: Text("Male")),
@@ -175,11 +182,10 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                     aadharCtrl,
                     obscure: !showAadhar,
                     suffix: IconButton(
-                      icon: Icon(showAadhar
-                          ? Icons.visibility_off
-                          : Icons.visibility),
-                      onPressed: () =>
-                          setState(() => showAadhar = !showAadhar),
+                      icon: Icon(
+                        showAadhar ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () => setState(() => showAadhar = !showAadhar),
                     ),
                   ),
                   _field("Medical History", historyCtrl, max: 3),
@@ -198,11 +204,14 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                   backgroundColor: primaryGreen,
                   foregroundColor: Colors.black,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Profile updated successfully")),
+                    const SnackBar(
+                      content: Text("Profile updated successfully"),
+                    ),
                   );
                 },
                 child: const Text(
@@ -223,10 +232,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
       color: Colors.white,
       borderRadius: BorderRadius.circular(16),
       boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(.05),
-          blurRadius: 10,
-        ),
+        BoxShadow(color: Colors.black.withOpacity(.05), blurRadius: 10),
       ],
     ),
     child: child,
@@ -241,28 +247,27 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
   );
 
   Widget _field(
-      String label,
-      TextEditingController ctrl, {
-        int max = 1,
-        bool obscure = false,
-        Widget? suffix,
-      }) =>
-      Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: TextField(
-          controller: ctrl,
-          maxLines: max,
-          obscureText: obscure,
-          decoration: InputDecoration(
-            labelText: label,
-            filled: true,
-            fillColor: const Color(0xFFF6F8F6),
-            suffixIcon: suffix,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-          ),
+    String label,
+    TextEditingController ctrl, {
+    int max = 1,
+    bool obscure = false,
+    Widget? suffix,
+  }) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: TextField(
+      controller: ctrl,
+      maxLines: max,
+      obscureText: obscure,
+      decoration: InputDecoration(
+        labelText: label,
+        filled: true,
+        fillColor: const Color(0xFFF6F8F6),
+        suffixIcon: suffix,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
         ),
-      );
+      ),
+    ),
+  );
 }

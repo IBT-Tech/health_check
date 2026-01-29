@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:dotted_border/dotted_border.dart';
-import 'package:flutter/material.dart';
-
 
 void main() {
   runApp(const LabProfileApp());
@@ -41,7 +38,7 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
   final phone = TextEditingController(text: "+1 234 567 890");
   final address = TextEditingController(
     text:
-    "123 Medical Plaza, Suite 400, Downtown Health District, New York, NY 10001",
+        "123 Medical Plaza, Suite 400, Downtown Health District, New York, NY 10001",
   );
 
   List<PlatformFile> uploadedFiles = [];
@@ -73,9 +70,7 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
 
   // SAVE PROFILE
   void saveProfile() {
-    if (labName.text.isEmpty ||
-        license.text.isEmpty ||
-        email.text.isEmpty) {
+    if (labName.text.isEmpty || license.text.isEmpty || email.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill required fields")),
       );
@@ -117,10 +112,7 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
         ),
         title: const Text(
           "Business Profile",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         actions: const [
           Icon(Icons.info_outline, color: primary),
@@ -138,7 +130,11 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
               input("License Number", license),
 
               section("Contact Details"),
-              input("Business Email", email, suffix: Icons.check_circle_outline),
+              input(
+                "Business Email",
+                email,
+                suffix: Icons.check_circle_outline,
+              ),
               input("Phone Number", phone),
 
               section("Location"),
@@ -147,7 +143,9 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16), // 🔹 full rounded corners
+                  borderRadius: BorderRadius.circular(
+                    16,
+                  ), // 🔹 full rounded corners
                   child: Stack(
                     children: [
                       // 🔹 Image
@@ -163,7 +161,9 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.black.withOpacity(0.1), // bg-black/10
-                            borderRadius: BorderRadius.circular(16), // 🔹 overlay corners
+                            borderRadius: BorderRadius.circular(
+                              16,
+                            ), // 🔹 overlay corners
                           ),
                         ),
                       ),
@@ -176,9 +176,14 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white, // bg-white
                             foregroundColor: Colors.black,
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30), // 🔹 pill button
+                              borderRadius: BorderRadius.circular(
+                                30,
+                              ), // 🔹 pill button
                             ),
                             elevation: 6, // shadow
                           ),
@@ -218,7 +223,10 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: primary.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20),
@@ -236,14 +244,19 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
                 ),
               ),
 
-// 🔹 Upload Box
+              // 🔹 Upload Box
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: primary.withValues(alpha: 0.05), // background light green
+                    color: primary.withValues(
+                      alpha: 0.05,
+                    ), // background light green
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: primary, // green border
@@ -268,7 +281,10 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
                       const SizedBox(height: 12),
                       const Text(
                         "Upload New Certification",
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       const Text(
@@ -288,8 +304,6 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
                   ),
                 ),
               ),
-
-
 
               uploadedFileCard(
                 fileIcon: Icons.picture_as_pdf_outlined,
@@ -311,16 +325,13 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
 
               verificationInfoBox(),
 
-
               ...uploadedFiles.map(
-                    (file) => ListTile(
+                (file) => ListTile(
                   leading: Icon(
                     file.extension == 'pdf'
                         ? Icons.picture_as_pdf
                         : Icons.image,
-                    color: file.extension == 'pdf'
-                        ? Colors.red
-                        : Colors.blue,
+                    color: file.extension == 'pdf' ? Colors.red : Colors.blue,
                   ),
                   title: Text(file.name),
                   subtitle: Text(
@@ -370,35 +381,31 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
     padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
     child: Text(
       title,
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-      ),
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
     ),
   );
 
-  Widget input(String label, TextEditingController c,
-      {IconData? suffix}) =>
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label),
-            const SizedBox(height: 6),
-            TextField(
-              controller: c,
-              decoration: InputDecoration(
-                suffixIcon:
-                suffix != null ? Icon(suffix, color: primary) : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-          ],
+  Widget input(
+    String label,
+    TextEditingController c, {
+    IconData? suffix,
+  }) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label),
+        const SizedBox(height: 6),
+        TextField(
+          controller: c,
+          decoration: InputDecoration(
+            suffixIcon: suffix != null ? Icon(suffix, color: primary) : null,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
         ),
-      );
+      ],
+    ),
+  );
 
   Widget textarea(String label, TextEditingController c) => Padding(
     padding: const EdgeInsets.all(16),
@@ -411,15 +418,14 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
           controller: c,
           maxLines: 4,
           decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
       ],
     ),
   );
 }
+
 Widget uploadedFileCard({
   required IconData fileIcon,
   required Color fileIconColor,
@@ -457,10 +463,7 @@ Widget uploadedFileCard({
                   const SizedBox(height: 2),
                   Text(
                     statusText,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
                 ],
               ),
@@ -472,6 +475,7 @@ Widget uploadedFileCard({
     ),
   );
 }
+
 Widget verificationInfoBox() {
   return Padding(
     padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
@@ -489,10 +493,7 @@ Widget verificationInfoBox() {
           Expanded(
             child: Text(
               "Verification increases your lab's visibility to patients by up to 40% and builds trust in the community.",
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.blue.shade800,
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.blue.shade800),
             ),
           ),
         ],

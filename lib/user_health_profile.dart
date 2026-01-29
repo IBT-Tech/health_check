@@ -28,8 +28,7 @@ class UserHealthApp extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide:
-            const BorderSide(color: Color(0xFF13EC5B), width: 2),
+            borderSide: const BorderSide(color: Color(0xFF13EC5B), width: 2),
           ),
         ),
       ),
@@ -51,8 +50,7 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
 
   final heightCtrl = TextEditingController();
   final weightCtrl = TextEditingController();
-  final aadharCtrl =
-  TextEditingController(text: "123456789012");
+  final aadharCtrl = TextEditingController(text: "123456789012");
   final historyCtrl = TextEditingController();
 
   @override
@@ -81,8 +79,9 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
                           "User Health Profile",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       SizedBox(width: 24),
@@ -102,34 +101,30 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
                           margin: const EdgeInsets.all(16),
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF13EC5B)
-                                .withOpacity(0.1),
+                            color: const Color(0xFF13EC5B).withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                                color: const Color(0xFF13EC5B)
-                                    .withOpacity(0.2)),
+                              color: const Color(0xFF13EC5B).withOpacity(0.2),
+                            ),
                           ),
                           child: Row(
                             children: const [
-                              Icon(Icons.verified_user,
-                                  color: Colors.green),
+                              Icon(Icons.verified_user, color: Colors.green),
                               SizedBox(width: 12),
                               Expanded(
                                 child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       "Data Privacy Guaranteed",
                                       style: TextStyle(
-                                          fontWeight:
-                                          FontWeight.bold),
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                     SizedBox(height: 4),
                                     Text(
                                       "Your medical data is encrypted using AES-256 standards and shared only with certified pathologists.",
-                                      style:
-                                      TextStyle(fontSize: 12),
+                                      style: TextStyle(fontSize: 12),
                                     ),
                                   ],
                                 ),
@@ -145,20 +140,23 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
                           value: gender,
                           items: const [
                             DropdownMenuItem(
-                                value: "male",
-                                child: Text("Male")),
+                              value: "male",
+                              child: Text("Male"),
+                            ),
                             DropdownMenuItem(
-                                value: "female",
-                                child: Text("Female")),
+                              value: "female",
+                              child: Text("Female"),
+                            ),
                             DropdownMenuItem(
-                                value: "other",
-                                child: Text("Other")),
+                              value: "other",
+                              child: Text("Other"),
+                            ),
                             DropdownMenuItem(
-                                value: "na",
-                                child: Text("Prefer not to say")),
+                              value: "na",
+                              child: Text("Prefer not to say"),
+                            ),
                           ],
-                          onChanged: (v) =>
-                              setState(() => gender = v),
+                          onChanged: (v) => setState(() => gender = v),
                         ),
 
                         Padding(
@@ -191,24 +189,24 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
                         Padding(
                           padding: const EdgeInsets.all(16),
                           child: Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text("Aadhar Card Number"),
                               const SizedBox(height: 8),
                               TextField(
                                 controller: aadharCtrl,
-                                keyboardType:
-                                TextInputType.number,
+                                keyboardType: TextInputType.number,
                                 obscureText: !showAadhar,
                                 decoration: InputDecoration(
                                   suffixIcon: IconButton(
-                                    icon: Icon(showAadhar
-                                        ? Icons.visibility_off
-                                        : Icons.visibility),
+                                    icon: Icon(
+                                      showAadhar
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                    ),
                                     onPressed: () => setState(
-                                            () => showAadhar =
-                                        !showAadhar),
+                                      () => showAadhar = !showAadhar,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -217,11 +215,12 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
                                 children: const [
                                   Icon(Icons.lock, size: 12),
                                   SizedBox(width: 4),
-                                  Text("Securely Encrypted",
-                                      style:
-                                      TextStyle(fontSize: 10))
+                                  Text(
+                                    "Securely Encrypted",
+                                    style: TextStyle(fontSize: 10),
+                                  ),
                                 ],
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -231,12 +230,10 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
                         Padding(
                           padding: const EdgeInsets.all(16),
                           child: _field(
-                            label:
-                            "Past Conditions (Optional)",
+                            label: "Past Conditions (Optional)",
                             ctrl: historyCtrl,
                             max: 4,
-                            hint:
-                            "Chronic asthma, Gluten allergy...",
+                            hint: "Chronic asthma, Gluten allergy...",
                           ),
                         ),
                       ],
@@ -258,20 +255,18 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                        const Color(0xFF13EC5B),
+                        backgroundColor: const Color(0xFF13EC5B),
                         foregroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
-                            borderRadius:
-                            BorderRadius.circular(16)),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                       ),
                       onPressed: () {
                         // API / Save logic
                       },
                       child: const Text(
                         "Update Health Info",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -286,9 +281,10 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
 
   Widget _title(String t) => Padding(
     padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-    child: Text(t,
-        style: const TextStyle(
-            fontSize: 18, fontWeight: FontWeight.bold)),
+    child: Text(
+      t,
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    ),
   );
 
   Widget _field({
@@ -297,42 +293,39 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
     String? hint,
     int max = 1,
     TextInputType? type,
-  }) =>
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label),
-          const SizedBox(height: 8),
-          TextField(
-            controller: ctrl,
-            keyboardType: type,
-            maxLines: max,
-            decoration: InputDecoration(hintText: hint),
-          ),
-        ],
-      );
+  }) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(label),
+      const SizedBox(height: 8),
+      TextField(
+        controller: ctrl,
+        keyboardType: type,
+        maxLines: max,
+        decoration: InputDecoration(hintText: hint),
+      ),
+    ],
+  );
 
   Widget _dropdown({
     required String label,
     required String? value,
     required List<DropdownMenuItem<String>> items,
     required ValueChanged<String?> onChanged,
-  }) =>
-      Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              value: value,
-              items: items,
-              onChanged: onChanged,
-              decoration:
-              const InputDecoration(hintText: "Select"),
-            ),
-          ],
+  }) => Padding(
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          initialValue: value,
+          items: items,
+          onChanged: onChanged,
+          decoration: const InputDecoration(hintText: "Select"),
         ),
-      );
+      ],
+    ),
+  );
 }

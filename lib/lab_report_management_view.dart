@@ -54,12 +54,14 @@ class _LabReportPageState extends State<LabReportPage> {
                 Container(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                   decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .scaffoldBackgroundColor
-                        .withAlpha(230),
+                    color: Theme.of(
+                      context,
+                    ).scaffoldBackgroundColor.withAlpha(230),
                     border: Border(
                       bottom: BorderSide(
-                        color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+                        color: isDark
+                            ? Colors.grey.shade800
+                            : Colors.grey.shade200,
                       ),
                     ),
                   ),
@@ -67,8 +69,10 @@ class _LabReportPageState extends State<LabReportPage> {
                     children: [
                       GestureDetector(
                         onTap: () {},
-                        child: Icon(Icons.arrow_back_ios,
-                            color: isDark ? Colors.white : Colors.black),
+                        child: Icon(
+                          Icons.arrow_back_ios,
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
                       ),
                       const Expanded(
                         child: Center(
@@ -88,11 +92,12 @@ class _LabReportPageState extends State<LabReportPage> {
                           Text(
                             'Edit',
                             style: TextStyle(
-                                color: Color(0xFF13EC5B),
-                                fontWeight: FontWeight.bold),
+                              color: Color(0xFF13EC5B),
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -130,7 +135,9 @@ class _LabReportPageState extends State<LabReportPage> {
                       color: isDark ? Colors.grey[900] : Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
+                        color: isDark
+                            ? Colors.grey.shade800
+                            : Colors.grey.shade100,
                       ),
                       boxShadow: [
                         BoxShadow(
@@ -160,20 +167,29 @@ class _LabReportPageState extends State<LabReportPage> {
                               const Text(
                                 'Ronald Richards',
                                 style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 'Male, 42 years • ID: P-9921',
                                 style: TextStyle(
-                                    color: isDark ? Colors.grey[400] : Colors.grey[600]),
+                                  color: isDark
+                                      ? Colors.grey[400]
+                                      : Colors.grey[600],
+                                ),
                               ),
                               const SizedBox(height: 8),
                               Row(
                                 children: [
-                                  Icon(Icons.calendar_today_outlined,
-                                      size: 14,
-                                      color: isDark ? Colors.grey[400] : Colors.grey),
+                                  Icon(
+                                    Icons.calendar_today_outlined,
+                                    size: 14,
+                                    color: isDark
+                                        ? Colors.grey[400]
+                                        : Colors.grey,
+                                  ),
                                   const SizedBox(width: 4),
                                   const Text(
                                     'Collected: Oct 24, 2023',
@@ -183,7 +199,7 @@ class _LabReportPageState extends State<LabReportPage> {
                                     ),
                                   ),
                                 ],
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -194,7 +210,8 @@ class _LabReportPageState extends State<LabReportPage> {
                             shape: BoxShape.circle,
                             image: const DecorationImage(
                               image: NetworkImage(
-                                  'https://lh3.googleusercontent.com/aida-public/AB6AXuAQJIqkFidE0R6lXzBBDOms5DJ6QkFqjKj_NoN6ivZ2_ccTKLWiUDccxLXWffyL-ZxgHb4Yrlr7iNxyRI22FNOjN0vlDpR3YHwuC6Y6v2jBB1PYNrIWjLm6tocXu5RWPkGywtLAaY0WVlrrzH7l5rEVhUUpbqfO5BosbY2pxDgzXGqndhNmdjy9A7XWWWqwYaYOZmtjPZYh1sAmyxS9otq71c5Byp7suiLKMA6v_rPpa9AA0Eb5hFqQh9jQlA5OxpZqPpUrTu--hW9B'),
+                                'https://lh3.googleusercontent.com/aida-public/AB6AXuAQJIqkFidE0R6lXzBBDOms5DJ6QkFqjKj_NoN6ivZ2_ccTKLWiUDccxLXWffyL-ZxgHb4Yrlr7iNxyRI22FNOjN0vlDpR3YHwuC6Y6v2jBB1PYNrIWjLm6tocXu5RWPkGywtLAaY0WVlrrzH7l5rEVhUUpbqfO5BosbY2pxDgzXGqndhNmdjy9A7XWWWqwYaYOZmtjPZYh1sAmyxS9otq71c5Byp7suiLKMA6v_rPpa9AA0Eb5hFqQh9jQlA5OxpZqPpUrTu--hW9B',
+                              ),
                               fit: BoxFit.cover,
                             ),
                             border: Border.all(
@@ -210,16 +227,25 @@ class _LabReportPageState extends State<LabReportPage> {
 
                 // Test Parameters Header
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
                         'Test Parameters',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFF13EC5B).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(16),
@@ -232,7 +258,7 @@ class _LabReportPageState extends State<LabReportPage> {
                             color: Color(0xFF13EC5B),
                           ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -292,31 +318,39 @@ class _LabReportPageState extends State<LabReportPage> {
                           filled: true,
                           fillColor: isDark ? Colors.grey[900] : Colors.white,
                           border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(
-                                color: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
-                              )),
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                              color: isDark
+                                  ? Colors.grey.shade800
+                                  : Colors.grey.shade100,
+                            ),
+                          ),
                           hintText:
-                          'Enter additional clinical observations or notes here...',
+                              'Enter additional clinical observations or notes here...',
                         ),
                         controller: TextEditingController(
-                            text:
-                            'Patient shows slightly elevated fasting glucose. Recommended follow-up HbA1c test for confirmation. Other blood parameters are within healthy range.'),
-                      )
+                          text:
+                              'Patient shows slightly elevated fasting glucose. Recommended follow-up HbA1c test for confirmation. Other blood parameters are within healthy range.',
+                        ),
+                      ),
                     ],
                   ),
                 ),
 
-
                 // Digital Signature
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: DottedBorder(
                     options: RoundedRectDottedBorderOptions(
                       padding: EdgeInsets.zero,
                       dashPattern: const [6, 4],
                       strokeWidth: 1.5,
-                      color: isDark ? Colors.grey.shade900 : Colors.grey.shade500,
+                      color: isDark
+                          ? Colors.grey.shade900
+                          : Colors.grey.shade500,
                       radius: const Radius.circular(16),
                     ),
                     child: Container(
@@ -329,13 +363,18 @@ class _LabReportPageState extends State<LabReportPage> {
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center, // <-- vertically center content
+                        mainAxisAlignment: MainAxisAlignment
+                            .center, // <-- vertically center content
                         children: [
                           const Text(
                             'DIGITAL SIGNATURE VERIFIED',
                             style: TextStyle(
-                                fontSize: 10, letterSpacing: 2, color: Colors.grey),
-                            textAlign: TextAlign.center, // <-- horizontally center text
+                              fontSize: 10,
+                              letterSpacing: 2,
+                              color: Colors.grey,
+                            ),
+                            textAlign: TextAlign
+                                .center, // <-- horizontally center text
                           ),
                           const SizedBox(height: 8),
                           Center(
@@ -345,7 +384,8 @@ class _LabReportPageState extends State<LabReportPage> {
                               decoration: const BoxDecoration(
                                 image: DecorationImage(
                                   image: NetworkImage(
-                                      'https://lh3.googleusercontent.com/aida-public/AB6AXuCfgno67jtP8fTn76Qq_OYwW1x5MkUC19Sd2Vh7LlohxsAU2whQVJSqa-4xE7oA7S665YMBOzi5HIA0lkUfhVoAPXVIo4j7ZpP2-HAH_a1hJDbTtTZS07GduGOSiM1iAbqwTkkWtCvvWdCkHiOwd99_G8TecwZ8lAhXNWxOQddfa_pLuTwWG-L4JWoe86KNKr5ifJg7_kWPP8MTwBA6NztBQivgn-IAEsdvPJyfhc4yJFotUdtpHppFgIpNHcay7LSFl2XlLkl7cId2'),
+                                    'https://lh3.googleusercontent.com/aida-public/AB6AXuCfgno67jtP8fTn76Qq_OYwW1x5MkUC19Sd2Vh7LlohxsAU2whQVJSqa-4xE7oA7S665YMBOzi5HIA0lkUfhVoAPXVIo4j7ZpP2-HAH_a1hJDbTtTZS07GduGOSiM1iAbqwTkkWtCvvWdCkHiOwd99_G8TecwZ8lAhXNWxOQddfa_pLuTwWG-L4JWoe86KNKr5ifJg7_kWPP8MTwBA6NztBQivgn-IAEsdvPJyfhc4yJFotUdtpHppFgIpNHcay7LSFl2XlLkl7cId2',
+                                  ),
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -355,7 +395,9 @@ class _LabReportPageState extends State<LabReportPage> {
                           const Text(
                             'Dr. Sarah Jenkins, MD',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 14),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                           const Text(
@@ -368,11 +410,10 @@ class _LabReportPageState extends State<LabReportPage> {
                     ),
                   ),
                 ),
-
               ],
             ),
 
-      // Bottom Submit Button (outside ListView)
+            // Bottom Submit Button (outside ListView)
             // Bottom Submit Button
             Positioned(
               bottom: 0,
@@ -380,17 +421,15 @@ class _LabReportPageState extends State<LabReportPage> {
               right: 0,
               child: Container(
                 padding: const EdgeInsets.all(16),
-                color: Theme.of(context)
-                    .scaffoldBackgroundColor
-                    .withAlpha(245),
+                color: Theme.of(context).scaffoldBackgroundColor.withAlpha(245),
                 child: ElevatedButton.icon(
                   onPressed: selectedStatus == 'Submitted'
                       ? null
                       : () {
-                    setState(() {
-                      selectedStatus = 'Submitted';
-                    });
-                  },
+                          setState(() {
+                            selectedStatus = 'Submitted';
+                          });
+                        },
                   icon: const Icon(Icons.send),
                   label: const Text(
                     'Submit Report to Patient',
@@ -436,7 +475,9 @@ class _LabReportPageState extends State<LabReportPage> {
               label,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: isSelected ? (isDark ? Colors.white : Colors.black) : Colors.grey,
+                color: isSelected
+                    ? (isDark ? Colors.white : Colors.black)
+                    : Colors.grey,
               ),
             ),
           ),
@@ -454,7 +495,6 @@ class _TestResultItem extends StatelessWidget {
   final Color valueColor;
 
   const _TestResultItem({
-    super.key,
     required this.name,
     required this.reference,
     required this.value,
@@ -491,13 +531,16 @@ class _TestResultItem extends StatelessWidget {
                   Text(
                     name,
                     style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                   Text(
                     reference,
                     style: TextStyle(
-                        fontSize: 12,
-                        color: isDark ? Colors.grey[400] : Colors.grey[600]),
+                      fontSize: 12,
+                      color: isDark ? Colors.grey[400] : Colors.grey[600],
+                    ),
                   ),
                 ],
               ),
@@ -509,14 +552,14 @@ class _TestResultItem extends StatelessWidget {
               Text(
                 value,
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: valueColor, fontSize: 16),
+                  fontWeight: FontWeight.bold,
+                  color: valueColor,
+                  fontSize: 16,
+                ),
               ),
-              Text(
-                status,
-                style: TextStyle(fontSize: 12, color: color),
-              ),
+              Text(status, style: TextStyle(fontSize: 12, color: color)),
             ],
-          )
+          ),
         ],
       ),
     );
