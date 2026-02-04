@@ -41,14 +41,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> loadJson() async {
-    final data = await rootBundle.loadString('assets/user_account_profile.json');
+
+    final data = await rootBundle.loadString('assets/all.json');
     final decoded = json.decode(data);
 
-    for (var field in decoded['fields']) {
+    // Assuming your all.json has a node for user_account_profile
+    final profileData = decoded['user_account_profile'];
+
+    for (var field in profileData['fields']) {
       controllers[field['key']] = TextEditingController(text: field['value']);
     }
 
-    setState(() => config = decoded);
+    setState(() => config = profileData);
   }
 
   Future<void> pickImage() async {
@@ -67,7 +71,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white, // ✅ White background
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -76,15 +80,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
           style: const TextStyle(color: Colors.black),
         ),
         centerTitle: true,
-        // 🔹 Back Arrow on Left Side
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context); // Back action
+            Navigator.pop(context);
           },
         ),
-
-    ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -179,7 +181,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               foregroundColor: Colors.black,
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8), // ✅ Small round rectangle
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
             onPressed: () {},

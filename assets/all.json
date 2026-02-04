@@ -242,7 +242,7 @@
       "edit_text": "Edit Photo"
     },
     "fields": [
-      { "key": "name", "label": "Full Name", "value": "Dr. Jonathan Smith", "keyboard": "text" },
+      { "key": "name", "label": "Full Name ", "value": "Dr. Jonathan Smith", "keyboard": "text" },
       { "key": "email", "label": "Email Address", "value": "j.smith@pathologylab.com", "keyboard": "email" },
       { "key": "phone", "label": "Phone Number", "value": "+1 (555) 123-4567", "keyboard": "phone" }
     ],
