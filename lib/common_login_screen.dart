@@ -192,6 +192,7 @@ class _PathologyLoginPageState extends State<PathologyLoginPage> {
 
               /// Role Selector
               Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 height: 48,
                 decoration: BoxDecoration(
                   color: brightness == Brightness.light
@@ -199,52 +200,51 @@ class _PathologyLoginPageState extends State<PathologyLoginPage> {
                       : Colors.grey[800],
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List.generate(roles.length, (index) {
-                    final role = roles[index].toString();
-                    final selected = selectedRole == role;
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(roles.length, (index) {
+                      final role = roles[index].toString();
+                      final selected = selectedRole == role;
 
-                    return GestureDetector(
-                      onTap: () => setState(() => selectedRole = role),
-                      child: Center(
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          height: 34,              // 👈 height kam
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 80,        // 👈 width control yahin se
-                          ),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: selected
-                                ? (brightness == Brightness.light
-                                ? Colors.white
-                                : primary)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            role,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
+                      return Padding(
+                        padding: EdgeInsets.only(
+                            right: index == roles.length - 1 ? 0 : 55), // ✅ bigger gap
+                        child: GestureDetector(
+                          onTap: () => setState(() => selectedRole = role),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            height: 36,
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
                               color: selected
-                                  ? (brightness == Brightness.light
-                                  ? textDark
-                                  : textLight)
-                                  : brightness == Brightness.light
-                                  ? subTextLight
-                                  : Colors.grey[400],
+                                  ? (brightness == Brightness.light ? Colors.white : primary)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              role,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: selected
+                                    ? (brightness == Brightness.light ? Colors.black87 : Colors.white)
+                                    : brightness == Brightness.light
+                                    ? const Color(0xFF4C739A)
+                                    : Colors.grey[400],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  }),
+                      );
+                    }),
+                  ),
                 ),
               ),
 
               const SizedBox(height: 24),
+
 
               /// Input Fields
               ...List.generate(fields.length, (index) {
