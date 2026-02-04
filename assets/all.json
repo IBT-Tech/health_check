@@ -251,7 +251,7 @@
   "user_health_profile": {
     "appBar": { "title": "User Health Profile" },
     "privacyCard": {
-      "title": "Data Privacy Guaranteed",
+      "title": "Data Privacy Guaranteed ",
       "description": "Your medical data is encrypted using AES-256 standards and shared only with certified pathologists."
     },
     "sections": [

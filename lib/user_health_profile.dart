@@ -22,8 +22,7 @@ class UserHealthApp extends StatelessWidget {
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
-          contentPadding:
-          const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
@@ -34,8 +33,7 @@ class UserHealthApp extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide:
-            const BorderSide(color: Color(0xFF13EC5B), width: 1.5),
+            borderSide: const BorderSide(color: Color(0xFF13EC5B), width: 1.5),
           ),
         ),
       ),
@@ -64,10 +62,10 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
   }
 
   Future<void> loadJson() async {
-    final data =
-    await rootBundle.loadString('assets/user_health_profile.json');
+
+    final data = await rootBundle.loadString('assets/all.json');
     setState(() {
-      config = json.decode(data);
+      config = json.decode(data)['user_health_profile'];
     });
   }
 
@@ -94,8 +92,7 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
                     child: Text(
                       config!['appBar']['title'],
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(width: 24),
@@ -196,15 +193,14 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
   Widget textField(Map f) {
     controllers.putIfAbsent(f['key'], () => TextEditingController());
 
-    // 👇 sirf medical history ke liye
     final bool isMedicalHistory = f['key'] == 'medical_history';
 
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Center( // 👈 center me aayega
+      child: Center(
         child: SizedBox(
           width: isMedicalHistory
-              ? MediaQuery.of(context).size.width * 0.85 // 👈 width kam
+              ? MediaQuery.of(context).size.width * 0.85
               : double.infinity,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,8 +210,7 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
               TextField(
                 controller: controllers[f['key']],
                 maxLines: f['maxLines'] ?? 1,
-                keyboardType:
-                f['keyboard'] == 'number' ? TextInputType.number : null,
+                keyboardType: f['keyboard'] == 'number' ? TextInputType.number : null,
                 decoration: InputDecoration(hintText: f['hint']),
               ),
             ],
@@ -224,7 +219,6 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
       ),
     );
   }
-
 
   Widget dropdownField(Map f) => Padding(
     padding: const EdgeInsets.all(16),
@@ -266,10 +260,8 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               suffixIcon: IconButton(
-                icon: Icon(
-                    showAadhar ? Icons.visibility_off : Icons.visibility),
-                onPressed: () =>
-                    setState(() => showAadhar = !showAadhar),
+                icon: Icon(showAadhar ? Icons.visibility_off : Icons.visibility),
+                onPressed: () => setState(() => showAadhar = !showAadhar),
               ),
             ),
           ),
@@ -278,8 +270,7 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
             children: [
               const Icon(Icons.lock, size: 12),
               const SizedBox(width: 4),
-              Text(f['secureText'],
-                  style: const TextStyle(fontSize: 10)),
+              Text(f['secureText'], style: const TextStyle(fontSize: 10)),
             ],
           ),
         ],
@@ -289,9 +280,7 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
 
   Widget sectionTitle(String t) => Padding(
     padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-    child: Text(t,
-        style:
-        const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+    child: Text(t, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
   );
 
   Widget bottomButton() => Container(
@@ -304,15 +293,10 @@ class _UserHealthProfileState extends State<UserHealthProfile> {
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF13EC5B),
           foregroundColor: Colors.black,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
         onPressed: () {},
-        child: Text(
-          config!['button']['text'],
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+        child: Text(config!['button']['text'], style: const TextStyle(fontWeight: FontWeight.bold)),
       ),
     ),
   );
