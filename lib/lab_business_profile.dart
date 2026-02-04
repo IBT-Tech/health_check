@@ -34,15 +34,18 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
   static const Color primary = Color(0xFF13EC5B);
 
   Map<String, dynamic>? data;
+  Map<String, dynamic>? profile;
+  Map<String, dynamic>? verification;
+  Map<String, dynamic>? location;
 
-  // Controllers
   late TextEditingController labName;
   late TextEditingController license;
   late TextEditingController email;
   late TextEditingController phone;
   late TextEditingController address;
 
-  List<PlatformFile> uploadedFiles = [];
+  List uploadedFiles = [];
+  List<PlatformFile> newFiles = [];
 
   @override
   void initState() {
@@ -51,16 +54,28 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
   }
 
   Future<void> loadJson() async {
-    final jsonStr = await rootBundle.loadString("assets/lab_business_profile.json");
+    final jsonStr = await rootBundle.loadString("assets/all.json");
     final jsonData = json.decode(jsonStr);
 
     setState(() {
-      data = jsonData;
-      labName = TextEditingController(text: data!['basicInfo']['labName']);
-      license = TextEditingController(text: data!['basicInfo']['license']);
-      email = TextEditingController(text: data!['contactDetails']['email']);
-      phone = TextEditingController(text: data!['contactDetails']['phone']);
-      address = TextEditingController(text: data!['location']['address']);
+      profile = jsonData['lab_business_profile'] ?? {};
+
+      data = profile;
+
+      labName = TextEditingController(
+          text: profile?['basicInfo']?['labName'] ?? '');
+      license = TextEditingController(
+          text: profile?['basicInfo']?['license'] ?? '');
+      email = TextEditingController(
+          text: profile?['contactDetails']?['email'] ?? '');
+      phone = TextEditingController(
+          text: profile?['contactDetails']?['phone'] ?? '');
+      address = TextEditingController(
+          text: profile?['location']?['address'] ?? '');
+
+      verification = profile?['verification'] ?? {};
+      uploadedFiles = verification?['files'] ?? [];
+      location = profile?['location'] ?? {};
     });
   }
 
@@ -83,7 +98,7 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
       }
 
       setState(() {
-        uploadedFiles.add(file);
+        newFiles.add(file);
       });
     }
   }
@@ -96,48 +111,24 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
       return;
     }
 
-    debugPrint("===== LAB PROFILE DATA =====");
-    debugPrint("Lab Name: ${labName.text}");
-    debugPrint("License: ${license.text}");
-    debugPrint("Email: ${email.text}");
-    debugPrint("Phone: ${phone.text}");
-    debugPrint("Address: ${address.text}");
-    debugPrint("Files: ${uploadedFiles.map((e) => e.name).toList()}");
-
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Business Profile Saved Successfully")),
     );
   }
 
   @override
-  void dispose() {
-    labName.dispose();
-    license.dispose();
-    email.dispose();
-    phone.dispose();
-    address.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (data == null) {
+    if (profile == null) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
-    final verification = data!['verification'];
-    final location = data!['location'];
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: const Icon(Icons.arrow_back_ios, color: Colors.black),
         title: const Text(
           "Business Profile",
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
@@ -153,6 +144,7 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
               section("Basic Information"),
               input("Lab Name", labName),
               input("License Number", license),
@@ -164,53 +156,56 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
               section("Location"),
               textarea("Full Address", address),
 
-              // 🔹 Map + Adjust Pin button (dynamic from JSON)
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: Stack(
                     children: [
+                      /// Map Image
                       Image.network(
-                        location['mapImage'],
+                        location?['mapImage'] ?? '',
                         height: 180,
                         width: double.infinity,
                         fit: BoxFit.cover,
                       ),
-                      Positioned.fill(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
+
+                      /// Black overlay (bg-black/10)
+                      Container(
+                        height: 180,
+                        width: double.infinity,
+                        color: Colors.black.withOpacity(0.1),
                       ),
+
+                      /// Adjust Pin Button
                       Positioned(
-                        bottom: 16,
-                        right: 16,
+                        bottom: 12,
+                        right: 12,
                         child: ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 10),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            elevation: 6,
-                          ),
                           onPressed: () {
-                            debugPrint("Adjust Pin clicked");
+                            // TODO: Open map / adjust pin logic
                           },
                           icon: const Icon(
-                            Icons.location_on_outlined,
+                            Icons.location_on,
+                            size: 18,
                             color: primary,
-                            size: 20,
                           ),
                           label: const Text(
                             "Adjust Pin",
                             style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w600),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            elevation: 6,
+                            padding:
+                            const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
                           ),
                         ),
                       ),
@@ -219,60 +214,124 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
                 ),
               ),
 
-              section("Verification & Licenses"),
+
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  "${verification['uploaded']}/${verification['total']} Uploaded",
-                  style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.bold),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween, // section on left, count on right
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Section Title
+                    Text(
+                      "Verification & Licenses",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    // Uploaded Count Box
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF13EC5B),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        "${uploadedFiles.length}/${verification?['total'] ?? 0} Uploaded",
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
-              ...verification['files'].map<Widget>((file) {
-                final icon = file['type'] == 'pdf'
-                    ? Icons.picture_as_pdf
-                    : Icons.image_outlined;
-                final color = file['type'] == 'pdf' ? Colors.red : Colors.blue;
-                return uploadedFileCard(
-                  fileIcon: icon,
-                  fileIconColor: color,
-                  fileName: file['name'],
-                  statusText:
-                  "${file['status']} • ${file['sizeMB'].toString()} MB",
-                  statusIcon: file['status'] == 'Verified'
-                      ? Icons.check_circle_outline
-                      : Icons.schedule,
-                  statusColor: file['status'] == 'Verified'
-                      ? Colors.green
-                      : Colors.orange,
+              /// 🟢 ADD THIS BLOCK HERE 👇 (IMPORTANT)
+              if (uploadedFiles.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Center( // optional: center the wider box
+                    child: SizedBox(
+                      width: 800, // <-- increase width as needed
+                      child: Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: primary.withOpacity(0.4),
+                            width: 2,
+                          ),
+                          color: primary.withOpacity(0.05),
+                        ),
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: primary.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.upload_file,
+                                size: 32,
+                                color: primary,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              "Upload New Certification",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 4),
+                            const Text(
+                              "PDF, JPG or PNG (Max 10MB)",
+                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                            ),
+                            const SizedBox(height: 12),
+                            TextButton(
+                              onPressed: pickFile, // 🔥 connects file picker
+                              child: const Text(
+                                "Browse Files",
+                                style: TextStyle(
+                                  color: primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+              ...uploadedFiles.map<Widget>((file) {
+                final isPdf = file['type'] == 'pdf';
+                return Container(
+                  width: double.infinity, // card will take full available width
+                  margin: const EdgeInsets.symmetric(vertical: 4), // optional spacing
+                  child: uploadedFileCard(
+                    fileIcon: isPdf ? Icons.picture_as_pdf : Icons.image_outlined,
+                    fileIconColor: isPdf ? Colors.red : Colors.blue,
+                    fileName: file['name'] ?? '',
+                    statusText: "${file['status']} • ${file['sizeMB']} MB",
+                    statusIcon: file['status'] == 'Verified'
+                        ? Icons.check_circle_outline
+                        : Icons.schedule,
+                    statusColor: file['status'] == 'Verified'
+                        ? Colors.green
+                        : Colors.orange,
+                  ),
                 );
               }).toList(),
 
+
               verificationInfoBox(),
 
-              ...uploadedFiles.map(
-                    (file) => ListTile(
-                  leading: Icon(
-                    file.extension == 'pdf'
-                        ? Icons.picture_as_pdf
-                        : Icons.image,
-                    color: file.extension == 'pdf' ? Colors.red : Colors.blue,
-                  ),
-                  title: Text(file.name),
-                  subtitle: Text(
-                    "${(file.size / 1024 / 1024).toStringAsFixed(2)} MB",
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {
-                      setState(() {
-                        uploadedFiles.remove(file);
-                      });
-                    },
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -282,7 +341,7 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: primary,
-            foregroundColor: Colors.black,
+            foregroundColor: Colors.black, // <-- makes text white
             minimumSize: const Size.fromHeight(56),
             shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -299,10 +358,9 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
 
   Widget section(String title) => Padding(
     padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-    child: Text(
-      title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-    ),
+    child: Text(title,
+        style:
+        const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
   );
 
   Widget input(String label, TextEditingController c) => Padding(
@@ -315,9 +373,22 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
         TextField(
           controller: c,
           decoration: InputDecoration(
-            border:
-            OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Colors.grey.shade300, // normal state
+                width: 1,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: primary, // 👈 GREEN border on tap
+                width: 2,
+              ),
+            ),
           ),
+
         ),
       ],
     ),
@@ -334,8 +405,20 @@ class _LabBusinessProfileState extends State<LabBusinessProfile> {
           controller: c,
           maxLines: 4,
           decoration: InputDecoration(
-            border:
-            OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Colors.grey.shade300, // normal
+                width: 1,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: _LabBusinessProfileState.primary, // 🟢 green on tap
+                width: 2,
+              ),
+            ),
           ),
         ),
       ],
@@ -356,7 +439,6 @@ Widget uploadedFileCard({
     child: Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
       ),
@@ -370,16 +452,12 @@ Widget uploadedFileCard({
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    fileName,
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    statusText,
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                  ),
+                  Text(fileName,
+                      style: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w600)),
+                  Text(statusText,
+                      style:
+                      TextStyle(fontSize: 12, color: Colors.grey.shade600)),
                 ],
               ),
             ],
@@ -401,14 +479,13 @@ Widget verificationInfoBox() {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(Icons.verified_user_outlined, color: Colors.blue),
-          const SizedBox(width: 10),
+        children: const [
+          Icon(Icons.verified_user_outlined, color: Colors.blue),
+          SizedBox(width: 10),
           Expanded(
             child: Text(
-              "Verification increases your lab's visibility to patients by up to 40% and builds trust in the community.",
-              style: TextStyle(fontSize: 12, color: Colors.blue.shade800),
+              "Verification increases your lab's visibility and builds trust.",
+              style: TextStyle(fontSize: 12),
             ),
           ),
         ],

@@ -27,15 +27,16 @@ class LabDataProvider {
   final Map<String, dynamic> data;
   LabDataProvider(this.data);
 
-  Map<String, dynamic> get profile => data['profile'];
+  Map<String, dynamic> get profile =>
+      data['lab_profile_and_test_list']?['profile'] ?? {};
   List<Map<String, dynamic>> get stats =>
-      List<Map<String, dynamic>>.from(data['stats']);
+      List<Map<String, dynamic>>.from(data['lab_profile_and_test_list']?['stats'] ?? []);
   List<Map<String, dynamic>> get tests =>
-      List<Map<String, dynamic>>.from(data['tests']);
+      List<Map<String, dynamic>>.from(data['lab_profile_and_test_list']?['tests'] ?? []);
 }
 
 Future<LabDataProvider> loadLabData() async {
-  final jsonString = await rootBundle.loadString('assets/lab_profile_and_test_list.json');
+  final jsonString = await rootBundle.loadString('assets/all.json');
   final jsonMap = json.decode(jsonString);
   return LabDataProvider(jsonMap);
 }
@@ -124,7 +125,10 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
                 width: 96,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  image: DecorationImage(image: NetworkImage(profile['image']), fit: BoxFit.cover),
+                  image: DecorationImage(
+                    image: NetworkImage(profile['image'] ?? ''),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               const SizedBox(width: 16),
@@ -134,7 +138,7 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
                   children: [
                     Row(
                       children: [
-                        Text(profile['name'],
+                        Text(profile['name'] ?? '',
                             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                         if (profile['verified'] == true) const SizedBox(width: 6),
                         if (profile['verified'] == true)
@@ -143,15 +147,20 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text("${profile['accreditation']} • ${profile['open_time']}",
-                        style: const TextStyle(
-                            color: LabProfileScreen.muted, fontWeight: FontWeight.w500)),
+                    Text(
+                      "${profile['accreditation'] ?? ''} • ${profile['open_time'] ?? ''}",
+                      style: const TextStyle(
+                          color: LabProfileScreen.muted, fontWeight: FontWeight.w500),
+                    ),
                     const SizedBox(height: 4),
                     Row(
                       children: [
                         const Icon(Icons.location_on_outlined, size: 16, color: LabProfileScreen.muted),
                         const SizedBox(width: 4),
-                        Text(profile['address'], style: const TextStyle(color: LabProfileScreen.muted)),
+                        Expanded(
+                          child: Text(profile['address'] ?? '',
+                              style: const TextStyle(color: LabProfileScreen.muted)),
+                        ),
                       ],
                     )
                   ],
@@ -175,9 +184,13 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
   Widget _statsSection(List<Map<String, dynamic>> stats) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(color: Colors.white, border: Border(top: BorderSide(color: Color(0xFFE5E7EB)))),
+      decoration: const BoxDecoration(
+          color: Colors.white, border: Border(top: BorderSide(color: Color(0xFFE5E7EB)))),
       child: Row(
-        children: stats.map((s) => _statCard(s['title'], s['value'], s['sub'], _mapIcon(s['icon']))).toList(),
+        children: stats
+            .map((s) => _statCard(
+            s['title'] ?? '', s['value'] ?? '', s['sub'], _mapIcon(s['icon'] ?? '')))
+            .toList(),
       ),
     );
   }
@@ -187,11 +200,11 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: tests.map((test) {
-          final price = test["price"] as int;
+          final price = test["price"] as int? ?? 0;
           final qty = cart[price] ?? 0;
           return TestCard(
-            title: test["title"] as String,
-            desc: test["desc"] as String,
+            title: test["title"] as String? ?? '',
+            desc: test["desc"] as String? ?? '',
             price: price,
             quantity: qty,
             onAdd: () => setState(() => cart[price] = 1),
@@ -227,15 +240,17 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
           backgroundColor: LabProfileScreen.primary,
+          foregroundColor: Colors.white, // <-- make text & icon white
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
           padding: const EdgeInsets.symmetric(vertical: 12),
         ),
         onPressed: () {},
-        icon: Icon(icon, size: 18),
+        icon: Icon(icon, size: 18), // icon will now be white automatically
         label: Text(text),
       ),
     );
   }
+
 
   Widget _outlineButton(IconData icon, String text) {
     return Expanded(
@@ -254,6 +269,8 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
   }
 
   Widget _statCard(String title, String value, String? sub, IconData icon) {
+    Color iconColor = icon == Icons.star_border ? Colors.yellow : LabProfileScreen.muted;
+
     return Expanded(
       child: Container(
         margin: const EdgeInsets.only(right: 8),
@@ -265,7 +282,13 @@ class _LabProfileScreenState extends State<LabProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(children: [Icon(icon, size: 14, color: LabProfileScreen.muted), const SizedBox(width: 4), Text(title, style: const TextStyle(fontSize: 12, color: LabProfileScreen.muted))]),
+            Row(
+              children: [
+                Icon(icon, size: 14, color: iconColor),
+                const SizedBox(width: 4),
+                Text(title, style: const TextStyle(fontSize: 12, color: LabProfileScreen.muted)),
+              ],
+            ),
             const SizedBox(height: 6),
             Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           ],
@@ -332,7 +355,8 @@ class _SearchHeader extends SliverPersistentHeaderDelegate {
               prefixIcon: const Icon(Icons.search),
               filled: true,
               fillColor: const Color(0xFFF1F5F9),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(6), borderSide: BorderSide.none),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6), borderSide: BorderSide.none),
             ),
           ),
           const SizedBox(height: 12),
@@ -371,7 +395,9 @@ class FilterChipWidget extends StatelessWidget {
         color: active ? LabProfileScreen.primary : const Color(0xFFF1F5F9),
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Text(text, style: TextStyle(color: active ? Colors.white : Colors.black, fontWeight: FontWeight.w500)),
+      child: Text(text,
+          style: TextStyle(
+              color: active ? Colors.white : Colors.black, fontWeight: FontWeight.w500)),
     );
   }
 }
@@ -405,7 +431,9 @@ class TestCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: quantity > 0 ? LabProfileScreen.primary : const Color(0xFFE5E7EB), width: quantity > 0 ? 2 : 1),
+        border: Border.all(
+            color: quantity > 0 ? LabProfileScreen.primary : const Color(0xFFE5E7EB),
+            width: quantity > 0 ? 2 : 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -417,7 +445,9 @@ class TestCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("₹$price", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: LabProfileScreen.primary)),
+              Text("₹$price",
+                  style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold, color: LabProfileScreen.primary)),
               quantity > 0
                   ? Row(children: [
                 IconButton(icon: const Icon(Icons.remove), onPressed: onDec),
@@ -425,7 +455,9 @@ class TestCard extends StatelessWidget {
                 IconButton(icon: const Icon(Icons.add), onPressed: onInc),
               ])
                   : ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: LabProfileScreen.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: LabProfileScreen.primary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
                 onPressed: onAdd,
                 child: const Text("Add to Cart", style: TextStyle(color: Colors.white)),
               )

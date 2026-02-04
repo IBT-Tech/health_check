@@ -65,9 +65,9 @@
       "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuBx6_qp9FxhmXVU-8f6kYXBmqo-0CuYaBocABdZvn6RApoMwXLXMk2kFcFAddL0BPZFh8KnaJPYwFDsWRhH0e0wuKI9M1uA9sxajF6Sj4dGse1nkpmbvzaCq1qPsD72hDKXFNp0zPU_Bi6MPD6aeQom2Tui9JDiaeXzxaYTHWwj8rIBJEJCHHfGtd-57hY4_M-ifclTkWlhg1m7iAzNGQiDYrqyR38xCUO39v0ZP6-SvTKzonlPAkvkOgDf1zyMS6j4IJnqghXel0KS"
     },
     "stats": [
-      { "title": "Rating", "value": "4.8", "sub": "1.2k", "icon": "star" },
-      { "title": "Tests", "value": "500+", "sub": null, "icon": "biotech" },
-      { "title": "Reports", "value": "24h", "sub": null, "icon": "schedule" }
+      { "title": "RATING", "value": "4.8 (1.2k)", "sub": "1.2k", "icon": "star" },
+      { "title": "TESTS", "value": "500+", "sub": null, "icon": "biotech" },
+      { "title": "REPORTS", "value": "24h", "sub": null, "icon": "schedule" }
     ],
     "tests": [
       {
