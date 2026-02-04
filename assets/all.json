@@ -1,0 +1,296 @@
+{
+  "common_login_screen": {
+    "app_title": "Pathology Login",
+    "welcome": {
+      "title": "Welcome Back",
+      "subtitle": "Access your diagnostic reports and lab management tools."
+    },
+    "roles": ["User", "Lab", "Admin"],
+    "fields": [
+      {
+        "key": "email",
+        "label": "Email or Phone Number",
+        "hint": "e.g. name@email.com",
+        "icon": "mail"
+      },
+      {
+        "key": "password",
+        "label": "Password",
+        "hint": "••••••••",
+        "icon": "lock",
+        "isPassword": true,
+        "forgotPassword": true
+      }
+    ],
+    "sign_in_button": {
+      "text": "Sign In",
+      "icon": "login"
+    },
+    "footer": {
+      "text": "Don't have an account?",
+      "action_text": "Register Now"
+    },
+    "icons": {
+      "mail": "Icons.mail",
+      "lock": "Icons.lock",
+      "login": "Icons.login",
+      "biotech": "Icons.biotech"
+    }
+  },
+  "lab_business_profile": {
+    "basicInfo": {
+      "labName": "City Path Labs",
+      "license": "LAB-9920-X"
+    },
+    "contactDetails": {
+      "email": "admin@citypath.com",
+      "phone": "+1 234 567 890"
+    },
+    "location": {
+      "address": "123 Medical Plaza, Suite 400, Downtown Health District, New York, NY 10001",
+      "mapImage": "https://lh3.googleusercontent.com/aida-public/AB6AXuDPOAdq0gjrs7msDhDeUa8QRJ1QjNA_TcTMP0diPaGZy-bWwE_-gMfXLZC91QlXYxf9lzUKKbvEZho3XR36P1Tll21ZEs1DNJx9FlVdOjiasPl8jR0benONbkDA8MJ9RNW3UTlqh-sHLGdwnoNqkE6IGEMy-BSh0F2lca-wrXihxjgmCF4NnbZAqmhcIg8E04bZAnUkzGjmXBZium4p3Y0fnX2OgQankxH-7AT7kSsfJJdnrvSHsCdeooClflbgM_hj6M_5j1917Y6-"
+    },
+    "verification": {
+      "uploaded": 2,
+      "total": 3
+    }
+  },
+  "lab_profile_and_test_list": {
+    "profile": {
+      "name": "City Diagnostics Center",
+      "verified": true,
+      "accreditation": "NABL Accredited",
+      "open_time": "Open until 8:00 PM",
+      "address": "12, Medical Square, Downtown",
+      "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuBx6_qp9FxhmXVU-8f6kYXBmqo-0CuYaBocABdZvn6RApoMwXLXMk2kFcFAddL0BPZFh8KnaJPYwFDsWRhH0e0wuKI9M1uA9sxajF6Sj4dGse1nkpmbvzaCq1qPsD72hDKXFNp0zPU_Bi6MPD6aeQom2Tui9JDiaeXzxaYTHWwj8rIBJEJCHHfGtd-57hY4_M-ifclTkWlhg1m7iAzNGQiDYrqyR38xCUO39v0ZP6-SvTKzonlPAkvkOgDf1zyMS6j4IJnqghXel0KS"
+    },
+    "stats": [
+      { "title": "Rating", "value": "4.8", "sub": "1.2k", "icon": "star" },
+      { "title": "Tests", "value": "500+", "sub": null, "icon": "biotech" },
+      { "title": "Reports", "value": "24h", "sub": null, "icon": "schedule" }
+    ],
+    "tests": [
+      {
+        "title": "Complete Blood Count (CBC)",
+        "desc": "Includes 24 parameters. Recommended for routine checkups.",
+        "price": 302
+      },
+      {
+        "title": "Thyroid Profile (T3, T4, TSH)",
+        "desc": "Assessment of thyroid gland function.",
+        "price": 452
+      },
+      {
+        "title": "Lipid Profile",
+        "desc": "Total cholesterol, HDL, LDL, VLDL and Triglycerides.",
+        "price": 602
+      },
+      {
+        "title": "Diabetes Screening",
+        "desc": "HbA1c and Blood Sugar (Fasting).",
+        "price": 552
+      }
+    ]
+  },
+  "lab_report_management_view": {
+    "reportNumber": "LAB-8829",
+    "patient": {
+      "name": "Ronald Richards",
+      "gender": "Male",
+      "age": 42,
+      "id": "P-9921",
+      "collectedDate": "Oct 24, 2023",
+      "avatar": "https://lh3.googleusercontent.com/aida-public/AB6AXuAQJIqkFidE0R6lXzBBDOms5DJ6QkFqjKj_NoN6ivZ2_ccTKLWiUDccxLXWffyL-ZxgHb4Yrlr7iNxyRI22FNOjN0vlDpR3YHwuC6Y6v2jBB1PYNrIWjLm6tocXu5RWPkGywtLAaY0WVlrrzH7l5rEVhUUpbqfO5BosbY2pxDgzXGqndhNmdjy9A7XWWWqwYaYOZmtjPZYh1sAmyxS9otq71c5Byp7suiLKMA6v_rPpa9AA0Eb5hFqQh9jQlA5OxpZqPpUrTu--hW9B"
+    },
+    "tests": [
+      {
+        "name": "Hemoglobin (Hb)",
+        "reference": "Ref: 13.5 - 17.5 g/dL",
+        "value": "14.2 g/dL",
+        "status": "Normal",
+        "icon": "biotech",
+        "color": "#13EC5B",
+        "valueColor": "#000000"
+      },
+      {
+        "name": "Glucose (Fasting)",
+        "reference": "Ref: 70 - 99 mg/dL",
+        "value": "126 mg/dL",
+        "status": "High",
+        "icon": "warning",
+        "color": "#FF0000",
+        "valueColor": "#FF0000"
+      },
+      {
+        "name": "Platelet Count",
+        "reference": "Ref: 150 - 450 x10³/µL",
+        "value": "210 x10³/µL",
+        "status": "Normal",
+        "icon": "opacity",
+        "color": "#13EC5B",
+        "valueColor": "#000000"
+      }
+    ],
+    "technicianNotes": "Patient shows slightly elevated fasting glucose. Recommended follow-up HbA1c test for confirmation. Other blood parameters are within healthy range.",
+    "doctor": {
+      "name": "Dr. Sarah Jenkins, MD",
+      "title": "Chief Pathologist • Reg #882910",
+      "signatureImage": "https://lh3.googleusercontent.com/aida-public/AB6AXuCfgno67jtP8fTn76Qq_OYwW1x5MkUC19Sd2Vh7LlohxsAU2whQVJSqa-4xE7oA7S665YMBOzi5HIA0lkUfhVoAPXVIo4j7ZpP2-HAH_a1hJDbTtTZS07GduGOSiM1iAbqwTkkWtCvvWdCkHiOwd99_G8TecwZ8lAhXNWxOQddfa_pLuTwWG-L4JWoe86KNKr5ifJg7_kWPP8MTwBA6NztBQivgn-IAEsdvPJyfhc4yJFotUdtpHppFgIpNHcay7LSFl2XlLkl7cId2"
+    }
+  },
+  "manage_tests_and_pricing": {
+    "tests": [
+      {
+        "name": "Complete Blood Count (CBC)",
+        "labId": "20491",
+        "yourPrice": 498,
+        "customerPrice": 500,
+        "active": true,
+        "icon": "science"
+      },
+      {
+        "name": "Lipid Profile",
+        "labId": "20498",
+        "yourPrice": 748,
+        "customerPrice": 750,
+        "active": true,
+        "icon": "monitor_heart"
+      },
+      {
+        "name": "HbA1c (Glycated Hb)",
+        "labId": "31052",
+        "yourPrice": 598,
+        "customerPrice": 600,
+        "active": false,
+        "icon": "bloodtype"
+      },
+      {
+        "name": "Liver Function Test (LFT)",
+        "labId": "20492",
+        "yourPrice": 848,
+        "customerPrice": 850,
+        "active": true,
+        "icon": "health_and_safety"
+      }
+    ]
+  },
+  "pdf_service": {
+    "title": "Test Report",
+    "clinic": {
+      "name": "City Diagnostic Center",
+      "address": "123 Medical Drive, Health City",
+      "accreditation": "NABL / CAP"
+    },
+    "patient": {
+      "name": "Johnathan Doe",
+      "age": 32,
+      "gender": "Male",
+      "collection_date": "Oct 24, 2023",
+      "report_id": "REF-987654321"
+    },
+    "tests": [
+      { "name": "Hemoglobin", "result": "14.2 g/dL", "reference": "13.5 - 17.5" },
+      { "name": "Glucose (Fasting)", "result": "110 mg/dL", "reference": "70 - 100", "status": "HIGH" },
+      { "name": "Creatinine", "result": "0.9 mg/dL", "reference": "0.7 - 1.3" },
+      { "name": "Vitamin D", "result": "18 ng/mL", "reference": "30 - 100", "status": "DEFICIENT" }
+    ],
+    "impression": {
+      "text": "Fasting blood glucose is slightly elevated. Vitamin D deficiency noted. Please consult your physician.",
+      "doctor": "Dr. Sarah Jenkins",
+      "designation": "MD, Consultant Pathologist"
+    }
+  },
+  "test_report_screen": {
+    "lab": {
+      "name": "City Diagnostic Center",
+      "address": "123 Medical Drive, Health City",
+      "accredited": "NABL / CAP",
+      "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuAYoNytu_hT_pRvulUrwFluvBYfumQePFfN-AQg1EqaBP1G0Il1X_ORMqaMoZJXpC6t6IBMCvdDNgJk7Pshg57juYybS8Mx71tADQqiSkOMt_FtSnnUs1v-eSKt7E_-_N38GNPU8CiDzdwQEPctA2s_MdalhdyaPXPD7oEIoAp_4s90TweMqZuCC9_TK9zWINr5YW8pADEByuzsp0PkxvSV9eJkUw1RiDzBdqao0fObi0hBj0VdekiNAVwuaVFKiAIFJHJPVK1dXmwa"
+    },
+    "patient": {
+      "name": "Johnathan Doe",
+      "age": 32,
+      "gender": "Male",
+      "collection_date": "Oct 24, 2023",
+      "report_id": "REF-987654321"
+    },
+    "sections": [
+      {
+        "title": "Metabolic Panel",
+        "status": "VERIFIED",
+        "tests": [
+          { "name": "Hemoglobin", "method": "SLS-Hemoglobin", "result": "14.2 g/dL", "reference": "13.5 - 17.5", "type": "normal" },
+          { "name": "Glucose (Fasting)", "method": "HIGH", "result": "110 mg/dL", "reference": "70 - 100", "type": "abnormal", "icon": "error" },
+          { "name": "Creatinine", "method": "Serum, Jaffe", "result": "0.9 mg/dL", "reference": "0.7 - 1.3", "type": "normal" },
+          { "name": "Vitamin D", "method": "DEFICIENT", "result": "18 ng/mL", "reference": "30 - 100", "type": "abnormal", "icon": "warning" }
+        ]
+      }
+    ],
+    "doctor_note": {
+      "title": "Pathologist's Impression",
+      "note": "Fasting blood glucose is slightly elevated. Vitamin D deficiency noted. Clinical correlation with dietary habits and sun exposure is advised. Please consult your physician for further management.",
+      "doctor_name": "Dr. Sarah Jenkins",
+      "doctor_degree": "MD, Consultant Pathologist",
+      "signature": "https://lh3.googleusercontent.com/aida-public/AB6AXuAuv65Nhd_gWAKMj-qda3bPc-YIuor2VQJZjLDCFFnJSR0BeZqjFcHXKKRT8QKLryGf7kx2cEhNGYewS9ANB9ZOFqBGLuDVaycRoUX_hEm02lDkoJaxkuW6SxHHkeCPlN3JrpRDnkxA6q-kcZRGIM4azrAF3dauAK1UlesFp2fn-w7pOMPh7QzmsQh2xXFJ7jM9ksGJWyIxN-qkrUSFiFED5VVtAE0oQ_1c89GmIrE8W5Rchbbuok9Ryf6NeuPX5airlfwJTq7mMbWu"
+    },
+    "disclaimer": "This report is for diagnostic purposes only. All results should be interpreted by a qualified medical professional."
+  },
+  "user_account_profile": {
+    "title": "Edit Profile",
+    "profile": {
+      "default_image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCRLLLOnmDoUw0_AjuXVJwXVwQ0SrR8fKoAETSJ6It6jzR93Vlo49m2powAQKqNAJr54cPUmqd3pA34C2N5L1ENuoT2yldO_o1cGh-H8kiPGK5l1Rzu75KhNKBJmAf7Raa7t8nJATfLMEMbi400LH_POhi_U8a7eioeRJYN8-yUV0ImHYu0UHoCEgw8b02qG5GhEZ56GH8WYNfwyCgcToD_BaeEdXE1fMdLkx_VO_J8GDLeD2ypJhlk9H7Wr2TGf4UgGdTkU0r7sOHO",
+      "edit_text": "Edit Photo"
+    },
+    "fields": [
+      { "key": "name", "label": "Full Name", "value": "Dr. Jonathan Smith", "keyboard": "text" },
+      { "key": "email", "label": "Email Address", "value": "j.smith@pathologylab.com", "keyboard": "email" },
+      { "key": "phone", "label": "Phone Number", "value": "+1 (555) 123-4567", "keyboard": "phone" }
+    ],
+    "buttons": { "change_password": "Change Password", "save": "Save Changes" }
+  },
+  "user_health_profile": {
+    "appBar": { "title": "User Health Profile" },
+    "privacyCard": {
+      "title": "Data Privacy Guaranteed",
+      "description": "Your medical data is encrypted using AES-256 standards and shared only with certified pathologists."
+    },
+    "sections": [
+      {
+        "title": "Personal Metrics",
+        "fields": [
+          {
+            "type": "dropdown",
+            "key": "gender",
+            "label": "Gender",
+            "items": [
+              { "value": "male", "label": "Male" },
+              { "value": "female", "label": "Female" },
+              { "value": "other", "label": "Other" },
+              { "value": "na", "label": "Prefer not to say" }
+            ]
+          },
+          {
+            "type": "row",
+            "fields": [
+              { "type": "text", "key": "height", "label": "Height (cm)", "hint": "175", "keyboard": "number" },
+              { "type": "text", "key": "weight", "label": "Weight (kg)", "hint": "70", "keyboard": "number" }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Identity & Privacy",
+        "fields": [
+          { "type": "aadhar", "key": "aadhar", "label": "Aadhar Card Number", "secureText": "Securely Encrypted" }
+        ]
+      },
+      {
+        "title": "Medical History",
+        "fields": [
+          { "type": "text", "key": "history", "label": "Past Conditions (Optional)", "hint": "Chronic asthma, Gluten allergy...", "maxLines": 4 }
+        ]
+      }
+    ],
+    "button": { "text": "Update Health Info" }
+  }
+}

@@ -41,6 +41,11 @@ class PathologyLoginPage extends StatefulWidget {
 
 class _PathologyLoginPageState extends State<PathologyLoginPage> {
   Map<String, dynamic>? config;
+  List roles = [];
+  List fields = [];
+  Map<String, dynamic>? welcome;
+  Map<String, dynamic>? signInButton;
+
   String selectedRole = '';
   bool passwordVisible = false;
 
@@ -51,11 +56,20 @@ class _PathologyLoginPageState extends State<PathologyLoginPage> {
   }
 
   Future<void> loadConfig() async {
-    final String response =
-    await rootBundle.loadString('assets/common_login_screen.json');
+    final response = await rootBundle.loadString('assets/all.json');
+    final decoded = json.decode(response);
+
     setState(() {
-      config = json.decode(response);
-      selectedRole = config!['roles'][0];
+      config = decoded['common_login_screen'];
+
+      roles = config?['roles'] ?? [];
+      fields = config?['fields'] ?? [];
+      welcome = config?['welcome'];
+      signInButton = config?['sign_in_button'];
+
+      if (roles.isNotEmpty) {
+        selectedRole = roles.first.toString();
+      }
     });
   }
 
@@ -66,14 +80,21 @@ class _PathologyLoginPageState extends State<PathologyLoginPage> {
       case 'lock':
         return const Icon(Icons.lock);
       case 'login':
-        return const Icon(Icons.login);
+        return const Icon(
+          Icons.login,
+          color: Colors.white, // 👈 icon white
+        );
+
       case 'biotech':
-        return const Icon(Icons.biotech, color: Color(0xFF137fec)); // blue color
+        return const Icon(
+          Icons.biotech,
+          color: Color(0xFF137FEC),
+          size: 39, // 👈 yahan size badhao (24, 28, 32 jo chaho)
+        );
       default:
-        return const Icon(Icons.help);
+        return const Icon(Icons.help_outline);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +117,8 @@ class _PathologyLoginPageState extends State<PathologyLoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Top App Bar
+
+              /// Top App Bar
               Row(
                 children: [
                   SizedBox(
@@ -109,7 +131,7 @@ class _PathologyLoginPageState extends State<PathologyLoginPage> {
                   ),
                   Expanded(
                     child: Text(
-                      config!['app_title'],
+                      config?['app_title'] ?? '',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 18,
@@ -125,7 +147,7 @@ class _PathologyLoginPageState extends State<PathologyLoginPage> {
               ),
               const SizedBox(height: 24),
 
-              // Brand / Welcome Section
+              /// Brand / Welcome
               Column(
                 children: [
                   Container(
@@ -133,13 +155,15 @@ class _PathologyLoginPageState extends State<PathologyLoginPage> {
                     height: 80,
                     decoration: BoxDecoration(
                       color: primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20), // 👈 small radius (rectangle feel)
                     ),
+                    alignment: Alignment.center,
                     child: getIcon('biotech'),
                   ),
+
                   const SizedBox(height: 16),
                   Text(
-                    config!['welcome']['title'],
+                    welcome?['title'] ?? '',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -152,7 +176,7 @@ class _PathologyLoginPageState extends State<PathologyLoginPage> {
                   SizedBox(
                     width: 280,
                     child: Text(
-                      config!['welcome']['subtitle'],
+                      welcome?['subtitle'] ?? '',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16,
@@ -166,23 +190,30 @@ class _PathologyLoginPageState extends State<PathologyLoginPage> {
               ),
               const SizedBox(height: 24),
 
-              // Role Selector
+              /// Role Selector
               Container(
                 height: 48,
                 decoration: BoxDecoration(
                   color: brightness == Brightness.light
                       ? const Color(0xFFE7EDF3)
                       : Colors.grey[800],
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
-                  children: List.generate(config!['roles'].length, (index) {
-                    final role = config!['roles'][index];
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(roles.length, (index) {
+                    final role = roles[index].toString();
                     final selected = selectedRole == role;
-                    return Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => selectedRole = role),
-                        child: Container(
+
+                    return GestureDetector(
+                      onTap: () => setState(() => selectedRole = role),
+                      child: Center(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          height: 34,              // 👈 height kam
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 80,        // 👈 width control yahin se
+                          ),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: selected
@@ -190,21 +221,13 @@ class _PathologyLoginPageState extends State<PathologyLoginPage> {
                                 ? Colors.white
                                 : primary)
                                 : Colors.transparent,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: selected
-                                ? [
-                              BoxShadow(
-                                color: primary.withOpacity(0.2),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              )
-                            ]
-                                : [],
+                            borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             role,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
+                              fontSize: 13,
                               color: selected
                                   ? (brightness == Brightness.light
                                   ? textDark
@@ -220,142 +243,113 @@ class _PathologyLoginPageState extends State<PathologyLoginPage> {
                   }),
                 ),
               ),
+
               const SizedBox(height: 24),
 
-              // Input Fields
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: List.generate(config!['fields'].length, (index) {
-                  final field = config!['fields'][index];
-                  final bool isPassword = field['isPassword'] ?? false;
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          field['label'],
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: 4),
-                        TextField(
-                          obscureText: isPassword && !passwordVisible,
-                          decoration: InputDecoration(
-                            prefixIcon: getIcon(field['icon']),
-                            suffixIcon: isPassword
-                                ? IconButton(
-                              icon: Icon(
-                                passwordVisible
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                              ),
-                              onPressed: () => setState(
-                                      () => passwordVisible = !passwordVisible),
-                            )
-                                : null,
-                            hintText: field['hint'],
-                            filled: true,
-                            fillColor: brightness == Brightness.light
-                                ? Colors.white
-                                : Colors.grey[900],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide(
-                                color: brightness == Brightness.light
-                                    ? const Color(0xFFCFDBE7)
-                                    : Colors.grey[700]!,
-                              ),
-                            ),
-                          ),
-                        ),
-                        if (field['forgotPassword'] == true)
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                "Forgot password?",
-                                style: TextStyle(color: primary, fontSize: 14),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  );
-                }),
-              ),
+              /// Input Fields
+              ...List.generate(fields.length, (index) {
+                final field = fields[index];
+                final bool isPassword = field['isPassword'] ?? false;
 
-              // Sign In Button
-              ElevatedButton.icon(
-                onPressed: () {},
-                icon: getIcon(config!['sign_in_button']['icon']),
-                label: Text(
-                  config!['sign_in_button']['text'],
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primary,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size.fromHeight(56),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  shadowColor: primary.withOpacity(0.2),
-                  elevation: 5,
-                ),
-              ),
-              const SizedBox(height: 24),
-
-// Footer: Register
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Don't have an account?",
-                        style: TextStyle(
-                          color: brightness == Brightness.light
-                              ? subTextLight
-                              : Colors.grey[400],
-                          fontSize: 14,
-                        ),
+                        field['label'] ?? '',
+                        style: const TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w600),
                       ),
-                      const SizedBox(width: 4),
-                      TextButton(
-                        onPressed: () {
-                          // Handle register navigation
-                        },
-                        child: Text(
-                          "Register Now",
-                          style: TextStyle(
-                            color: primary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                      const SizedBox(height: 4),
+                      TextField(
+                        obscureText: isPassword && !passwordVisible,
+                        decoration: InputDecoration(
+                          prefixIcon: getIcon(field['icon'] ?? ''),
+                          suffixIcon: isPassword
+                              ? IconButton(
+                            icon: Icon(passwordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off),
+                            onPressed: () => setState(() =>
+                            passwordVisible = !passwordVisible),
+                          )
+                              : null,
+                          hintText: field['hint'] ?? '',
+                          filled: true,
+                          fillColor: brightness == Brightness.light
+                              ? Colors.white
+                              : Colors.grey[900],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                       ),
+                      if (field['forgotPassword'] == true)
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {},
+                            child: Text("Forgot password?",
+                                style:
+                                TextStyle(color: primary, fontSize: 14)),
+                          ),
+                        ),
                     ],
                   ),
+                );
+              }),
 
-                  const SizedBox(height: 16),
+              /// Sign In Button
+              ElevatedButton.icon(
+                onPressed: () {},
+                icon: getIcon(signInButton?['icon'] ?? ''),
+                label: Text(
+                  signInButton?['text'] ?? '',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
 
-                  // Optional iOS-style home indicator
-                  Container(
-                    width: 128,
-                    height: 6,
-                    decoration: BoxDecoration(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primary,
+                  minimumSize: const Size.fromHeight(56),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),const SizedBox(height: 24),
+
+              /// Don't have account + Register
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Don't have an account? ",
+                    style: TextStyle(
+                      fontSize: 14,
                       color: brightness == Brightness.light
-                          ? Colors.grey[300]
-                          : Colors.grey[700],
-                      borderRadius: BorderRadius.circular(50),
+                          ? const Color(0xFF4C739A)
+                          : Colors.grey[400],
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: () {
+                      // TODO: Register screen navigation
+                    },
+                    child: Text(
+                      "Register Now",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: primary,
+                      ),
+                    ),
+                  ),
                 ],
               ),
-
             ],
           ),
         ),
@@ -363,3 +357,4 @@ class _PathologyLoginPageState extends State<PathologyLoginPage> {
     );
   }
 }
+
