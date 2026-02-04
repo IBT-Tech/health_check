@@ -25,10 +25,15 @@ class _TestReportScreenState extends State<TestReportScreen> {
   }
 
   Future<void> loadJson() async {
-    final String response =
-    await rootBundle.loadString('assets/test_report_screen.json');
+
+    final String response = await rootBundle.loadString('assets/all.json');
+    final decoded = json.decode(response);
+
+    // Assuming your all.json has a node for test_report_screen
+    final reportData = decoded['test_report_screen'];
+
     setState(() {
-      data = json.decode(response);
+      data = reportData;
     });
   }
 
@@ -114,13 +119,26 @@ class _TestReportScreenState extends State<TestReportScreen> {
             ),
           ),
           onPressed: () async {
-            await PdfService.generateTestReportPdf();
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Report downloaded successfully"),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
+            try {
+              // Call the PdfService to generate PDF
+              await PdfService.generateTestReportPdf();
+
+              // Show success snackbar
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Report downloaded successfully"),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            } catch (e) {
+              // Handle errors gracefully
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Failed to generate PDF: $e"),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
           },
           icon: const Icon(Icons.download),
           label: const Text(
@@ -129,6 +147,7 @@ class _TestReportScreenState extends State<TestReportScreen> {
           ),
         ),
       ),
+
     );
   }
 

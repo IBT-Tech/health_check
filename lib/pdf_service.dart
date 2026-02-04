@@ -8,8 +8,12 @@ import 'package:printing/printing.dart';
 
 class PdfService {
   static Future<void> generateTestReportPdf() async {
-    final jsonString = await rootBundle.loadString('assets/pdf_service.json');
-    final Map<String, dynamic> data = json.decode(jsonString);
+
+    final jsonString = await rootBundle.loadString('assets/all.json');
+    final Map<String, dynamic> decoded = json.decode(jsonString);
+
+
+    final Map<String, dynamic> data = decoded['pdf_service'];
 
     final pdf = pw.Document();
 
